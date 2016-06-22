@@ -1,0 +1,30 @@
+﻿<div class="row">
+    <div class="col-sm-10">
+        <p><h3 class="news-edit-header">Edit Article - {{authorName}}</h3></p>
+    </div>
+    <div class="col-sm-2">
+        <p><h4><a class="news-edit-header-back pull-right" ng-href="#/{{returnUrl}}/{{lastPageNum}}">Go Back</a></h4></p>
+    </div>
+</div>
+<hr />
+<div ng-show="articleSaved" class="alert alert-success" role="alert">
+    <br />
+    <h4>Article successfully saved! Click here to go back <a ng-href="#/{{returnUrl}}/{{lastPageNum}}">Go Back</a></h4>
+</div>
+<form ng-hide="articleSaved">
+    <div class="form-group">
+        <h4><dynamic-input model="input.title.value" config="input.title.config"></dynamic-input></h4>
+    </div>
+    <div class="form-group">
+        <h4><dynamic-input model="input.body.value" config="input.body.config"></dynamic-input></h4>
+    </div>
+    <div class="form-group">
+        <h4 class="pull-right" ng-show="input.publish.value" ng-bind="publishDate | date:'MM/dd/yyyy'"></h4>
+        <h4><dynamic-input model="input.publish.value" config="input.publish.config"></dynamic-input></h4>
+    </div>  
+    <div class="form-group">
+        <h4><dynamic-input model="input.comment.value" config="input.comment.config"></dynamic-input></h4>
+        <p class="help-block"><h4>Feel free to leave your very own comment if you wish</h4></p>
+    </div>
+    <button ng-click="updateArticle()" type="submit" class="btn btn-warning btn-lg pull-right">Save</button>
+</form>

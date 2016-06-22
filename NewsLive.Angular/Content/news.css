@@ -1,0 +1,199 @@
+﻿/*
+ * Globals
+ */
+
+/*body {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: #555;
+}
+
+
+/*
+ * Override Bootstrap's default container.
+ */
+
+@media (min-width: 1200px) {
+  .container {
+    width: 970px;
+  }
+}
+
+
+/*
+ * news name and description
+ */
+
+.news-header {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.news-title {
+  margin-top: 30px;
+  margin-bottom: 0;
+  font-size: 60px;
+  font-weight: normal;
+}
+.news-description {
+  font-size: 20px;
+  color: #999;
+}
+
+
+/*
+ * Main column and sidebar layout
+ */
+
+.news-main {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+/* Sidebar modules for boxing content */
+.sidebar-module {
+  padding: 15px;
+  margin: 0 -15px 15px;
+}
+.sidebar-module-inset {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+.sidebar-module-inset p:last-child,
+.sidebar-module-inset ul:last-child,
+.sidebar-module-inset ol:last-child {
+  margin-bottom: 0;
+}
+
+
+/* Pagination */
+.pagination > li > a:focus, .pagination > li > a:hover, .pagination > li > span:focus, .pagination > li > span:hover, .pagination{
+    background: #333333;
+    color:darkorange; 
+    cursor:pointer;
+}
+.pagination > .active > a, 
+.pagination > .active > span, 
+.pagination > .active > a:hover, 
+.pagination > .active > span:hover, 
+.pagination > .active > a:focus, 
+.pagination > .active > span:focus {
+    background: #333333;
+    color:darkorange; 
+    cursor:pointer;
+    border-color:#fff;
+}
+
+.pagination > li > a, .pagination > li > span {
+    background: #333333;
+    color:#fff;
+    padding: 10px 25px;
+    border-color:#fff;
+}
+.pagination > li.active > a {
+  background: #333333;
+  color: darkorange;
+  border-color:#fff;
+}
+
+
+/*
+ * news posts
+ */
+
+.news-post {
+  margin-top:50px;
+  margin-bottom: 20px;
+  min-height:200px;
+}
+.news-post-title {
+  margin-bottom: 5px;
+  font-size: 32px;
+}
+.news-post-meta {
+  margin-bottom: 20px;
+  color: #999;
+}
+.news-blockquote{
+    margin:0px;
+}
+
+.news-post-edit-title,
+.news-post-edit-body, 
+.news-post-edit-comment,
+.news-post-edit-publish {
+  font-size: 20px;
+}
+
+.news-edit-header {
+    margin-top:30px;
+    margin-bottom:0px;
+}
+.news-edit-header-back {
+    margin-top:30px;
+}
+
+.news-post-outter {
+    padding-left:0px;padding-right:0px;
+}
+
+[class|=col-xs],
+[class|=col-sm],
+[class|=col-md],
+[class|=col-lg] {
+    position:static;
+} 
+
+/*
+ * Likes
+ */
+.like, 
+.unlike {
+    width:25px;
+    padding-top:14px;
+    margin-right:5px;
+    cursor:pointer;
+}
+.like {
+    filter: grayscale(0%);
+    -webkit-filter: grayscale(0%);
+}
+.unlike {
+    filter: grayscale(100%);
+    -webkit-filter: grayscale(100%);
+}
+
+.textlike,
+.textunlike,
+.likedcount {
+    padding-top:8px;
+}
+
+.textlike {
+    color:#FF9900;
+}
+.textunlike {
+    color:grey;
+}
+
+.likedcount {
+    margin-left:7px;    
+}
+
+.comment-btn {
+    margin-top:10px;
+}
+
+/*
+ * Footer
+ */
+
+/*.news-footer {
+  padding: 40px 0;
+  color: #999;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-top: 1px solid #e5e5e5;
+}
+.news-footer p:last-child {
+  margin-bottom: 0;
+}*/

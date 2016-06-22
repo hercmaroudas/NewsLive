@@ -1,0 +1,12 @@
+﻿<div>
+    <label for="{{config.id}}">{{config.label}}</label>
+    <div ng-switch="config.type">
+        <input ng-switch-when="text" id="{{config.id}}" type="text" ng-model="$parent.model" class="{{config.class}}" placeholder="{{config.placeholder}}" />
+        <input ng-switch-when="email" id="{{config.id}}" type="email" ng-model="$parent.model"  class="{{config.class}}"  placeholder="{{config.placeholder}}" />
+        <input ng-switch-when="password" id="{{config.id}}" type="password" ng-model="$parent.model" class="{{config.class}}" placeholder="{{config.placeholder}}" />
+        <input ng-switch-when="number" id="{{config.id}}" type="number" step="{{config.step}}" ng-model="$parent.model"  class="{{config.class}}" />
+        <input ng-switch-when="checkbox" id="{{config.id}}" type="checkbox" checked="{{config.checked}}" ng-model="$parent.model" class="{{config.class}}" />
+        <select ng-switch-when="select" id="{{config.id}}" ng-model="$parent.model" class="{{config.class}}" ng-options="opt.id as opt.name for opt in config.options"></select>
+        <textarea ng-switch-when="textarea" ng-model="$parent.model" class="{{config.class}}" rows="{{config.rows}}" placeholder="{{config.placeholder}}"></textarea>
+    </div>
+</div>

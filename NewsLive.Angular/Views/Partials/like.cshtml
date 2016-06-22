@@ -1,0 +1,7 @@
+﻿<div >
+    <a href="">
+        <h4 ng-class="[style, {textlike: liked}, {textunlike: unliked}]" class="likedcount pull-right" >{{total}}</h4>
+        <h4 ng-click="toggle()" ng-class="[style, {textlike: liked}, {textunlike: unliked}]" class="pull-right">Like</h4>
+    </a>
+    <img ng-click="toggle()" src="~/Content/images/like.png" ng-class="[style, {like: liked}, {unlike: unliked}]" class="pull-right img-responsive" alt="Responsive image" >
+</div>

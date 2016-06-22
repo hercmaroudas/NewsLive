@@ -1,0 +1,46 @@
+﻿<div class="row">
+    <div class="col-sm-12 news-main">
+        <div ng-cloak ng-repeat="article in articles">
+            <div class="col-sm-9 news-post-outter" >
+                <div class="news-post">
+                    <h2 class="news-post-title">{{article.title}}Sample news post</h2>
+                    <p ng-show="membership.person.isPublisher" class="pull-right">
+                        <a ng-href="#/article-edit-view/{{article.articleId}}/{{nextPageNum}}">edit</a> 
+                    |   <a ng-click="deleteArticle(article)" href="">delete</a>
+                    </p>
+                    <p class="news-post-meta">Author: {{article.author.publishDate}}<a href="#">{{article.author.firstName}}, {{article.author.lastName}}</a></p>
+                    <h2>{{heading}}</h2>
+                    <p>{{article.body}}</p>
+                </div>
+                <like liked="article.liked" likes="article.likes" toggle="toggleLike(article.articleId)" ></like>
+                <h2><span class="">Comments</span></h2>
+                <hr />
+                <div ng-repeat="comment in article.comments">
+                    <blockquote class="news-blockquote">
+                        <p>{{comment.commentContent}}</p>
+                    </blockquote>
+                    <hr />
+                </div>
+                <div >
+                    <dynamic-input model="input.comment.value" config="input.comment.config"></dynamic-input>
+                    <button type="button" class="comment-btn btn btn-default pull-right" ng-click="addComment(article)">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav>
+        <ul class="pagination">
+            <li>
+                <a href="" aria-label="Previous" ng-click="decrementPageNum()">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li ng-repeat="page in numPages"><a href="">{{page.index}}</a></li>
+            <li>
+                <a href="" aria-label="Next" ng-click="incrementPageNum()">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>

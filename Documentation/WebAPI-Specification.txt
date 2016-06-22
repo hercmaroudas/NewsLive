@@ -1,0 +1,141 @@
+  
+  WebAPI - Specification version 1.1
+
+
+  1. Membership Controller
+
+    1.1. [GET] Login( UserName, Password  ) -> Returns Person
+    
+      1.1.1. Retrieves Person that has successfully logged in otherwise null.
+        { assumption: that the person logging in already has a membership }
+
+
+
+  2. Article Controller
+
+    2.1. [GET] GetArticle ( ArticleId ) -> Returns Article
+    
+      2.1.1. Retrieves an Article corresponding to ArticleId, including:
+        
+          2.1.1.1. Associated Comments and Comment Likes 
+            { using ArticleId on Comment.ArticleId and CommentArticle.CommentId }
+        
+          2.1.1.2. Associated Persons who have liked Article Comments
+            { using PersonId on Person.PersonId }
+        
+          2.1.1.3. Associated Likes
+            { using ArticleId on Like.ArticleId }
+        
+          2.1.1.4. Associated Persons who have liked Articles
+            { using PersonId on Person.PersonId }
+
+    
+    2.2. [GET] GetAllArticles () -> Returns Articles[]
+
+        2.2.1. Retrieves all Articles including:
+      
+          ( *note below has been abandoned because of the data load for many articles )
+          2.2.1.1. Associated Comments and Comment Likes 
+            { using ArticleId on Comment.ArticleId and CommentArticle.CommentId }
+        
+          2.2.1.2. Associated Persons who have liked Article Comments
+            { using PersonId on Person.PersonId }
+        
+          2.2.1.3. Associated Likes
+            { using ArticleId on Like.ArticleId }
+        
+          2.2.1.4. Associated Persons who have liked Articles
+            { using PersonId on Person.PersonId }
+    
+    
+    2.3. [GET] GetAllArticlesPaged ( numResultsPerPage, currentPageNum ) -> Returnes Articles[]
+    
+      2.3.1. Retrieves all Articles for current page ( + 1 )
+      
+       2.3.1.1. Retrieved results are calculate as follows: 
+        {
+          {
+            numResultsPerPage = 10
+            currentPage = 1
+            
+            next_page_num = currentPage  + 1
+            
+            num_rows = number of published articles  = 111
+            
+            num_pages = num_rows / numResultsPerpage  = 111 / 10  = 11.1  = 12 
+            
+            row_from = numResultsPerpage * next_page_num = 10 * next_page_num
+          
+            *query = select all articles where rownum > row_from
+          }
+        }
+    
+    2.3. [GET] GetGroupedArticleLikes() GroupedArticleLike[]
+    
+      2.3.1. Retrieves Articles with Likes plotted against each Article
+      
+        
+    2.4. [POST] PublishArticle ( Article ) -> Returns Article 
+    
+      2.4.1. Inserts an Article and returns the inserted Article
+
+
+    2.5. [PUT] UpdatePublishedArticle ( Article ) -> Returns Boolean
+    
+      2.5.1. Updates an Article and returns true if deleted otherwise false
+      
+      
+    2.6. [DELETE] DeletePublishedArticle ( ArticleId ) -> Returns Boolean
+    
+      2.6.1. Deletes an Article and returns true if deleted otherwise false
+
+
+
+  3. Like Controller
+
+    3.1. [GET] GetMostLikedArticle () -> Returns GroupedLikedArticle
+    
+      3.1.1. Returns an aggregate of on Articles with the most likes, including:
+      
+        3.1.1.1. The number of likes for the most liked Article
+        
+        3.1.1.2. The Article that has the most Likes associated with the calculated aggregate
+          { using ArticleId on Like.ArticleId }
+
+
+    3.2. [Post] ToggleLike ( ArticleId, PersonId ) -> Returns Like
+    
+      3.2.1. Toggles Like on an Article and returns the current Like
+      
+      3.2.2. Toggles Like on an Article by Person Id by:
+      
+        3.2.2.1. If Like does not exist, Like is created and set to true
+        
+        3.2.2.2. If Like does exist, Like is is toggled
+
+
+
+  4. Comment Controller
+  
+    4.1. [POST] AddComment ( Comment { note: Comment Object } ) - Returns Comment
+    
+      4.1.1. Adds a comment to an article and returns the Comment added
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
