@@ -7,17 +7,18 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using Moq;
-
+    using Services;
     using NewsLive.DataAccess.Repository.Article;
     using NewsLive.DataAccess.Repository.ArticleLike;
     using NewsLive.DataAccess.Repository.Comment;
     using NewsLive.DataAccess.Repository.Membership;
-
+    
     [TestClass]
     public class BaseRepositoryTest
     {
         protected static IDataService dataService;
         protected static IDataService pagedDataService;
+        protected static IPagingService pagingService;
 
         protected static IMembershipRepository membershipRepository;
         protected static IArticleRepository articleRepository;
@@ -53,7 +54,9 @@
         public static void Initialize(TestContext context)
         {
             Setup();
-            
+
+            pagingService = new PagingService();
+
             // Inject db context mocking our database entities 
             dataService = new DataService(NewsLiveDbContextMock.Object);
             pagedDataService = new DataService(PagingNewsLiveDbContextMock.Object);
@@ -65,9 +68,9 @@
             commentRepository = new CommentRepository(dataService);
 
             // ArticleRepository now contains our data service with mocked entities
-            articleRepository = new ArticleRepository(dataService);
+            articleRepository = new ArticleRepository(dataService, pagingService);
             // ArticleRepository (Paged Articles) now contains our data service with mocked entities
-            pagedArticleRepository = new ArticleRepository(pagedDataService);
+            pagedArticleRepository = new ArticleRepository(pagedDataService, pagingService);
 
             // ArticleLikeRepository now contains our data service with mocked entities
             articleLikeRepository = new ArticleLikeRepository(dataService);
@@ -244,9 +247,9 @@
                     Title = string.Format("Title {0}", articleCount),
                     Body = string.Format("Body {0}", articleCount),
                     PublishDate = articleCount < 111 
-                        ? DateTime.Now 
+                        ? DateTime.Now.AddMinutes(articleCount)
                         : (articleCount % 2) == 0 
-                            ? DateTime.Now 
+                            ? DateTime.Now.AddMinutes(articleCount) 
                             : new DateTime?(), 
                     PersonId = articleCount < 111 
                         ? authorOne.PersonId 

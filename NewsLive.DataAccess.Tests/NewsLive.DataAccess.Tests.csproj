@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NewsLive.DataAccess.Tests</RootNamespace>
     <AssemblyName>NewsLive.DataAccess.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -84,6 +85,10 @@
     <ProjectReference Include="..\NewsLive.DataAccess\NewsLive.DataAccess.csproj">
       <Project>{b0774b57-b264-4a5f-ad4c-137fab594505}</Project>
       <Name>NewsLive.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NewsLive.Services\NewsLive.Services.csproj">
+      <Project>{44286c96-cb93-44b2-b655-c5a3fa47b7c1}</Project>
+      <Name>NewsLive.Services</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

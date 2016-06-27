@@ -1,9 +1,11 @@
 ﻿namespace NewsLive.DataAccess.Mappings
 {
+    using Services;
+
     using System;
     using System.Linq;
     using System.Collections.Generic;
-    
+
     public static class ArticleMapping
     {
         public static DataAccess.Article ToArticleEntity(this Models.ArticleModel model)
@@ -43,28 +45,17 @@
             return modelArticles;
         }
 
-        public static IEnumerable<Models.ArticleModel> ToPagedArticleModelList(this IEnumerable<DataAccess.Article> articleEntities, int numResultsPerPage, int currentPageNum)
+        public static IEnumerable<Models.ArticleModel> ToPagedArticleModelList
+            (this IEnumerable<DataAccess.Article> articleEntities, IPagingService pagingService, int numResultsPerPage, int nextPageNum)
         {
             var numArticles = articleEntities.Count();
 
-            var pageCount = (int)Math.Ceiling((decimal)numArticles / numResultsPerPage);
+            var pagerResult = pagingService
+                .CalculatePagingMetric(numArticles, numResultsPerPage, nextPageNum);
 
-            var numFrom = 0;
-            if (numResultsPerPage > currentPageNum || numResultsPerPage == 1)
-            {
-                numFrom = currentPageNum - 1;
-            }
-            else if (currentPageNum <= pageCount)
-            {
-                numFrom = (pageCount * numResultsPerPage) - numResultsPerPage;
-            }
-            else if (pageCount > numResultsPerPage)
-            {
-                numFrom = (numResultsPerPage * (currentPageNum + 1)) - 1;
-            }
-
-            var pagedArticles = articleEntities.ToArticleModelList(pageCount)
-                .Where((a, index) => index >= numFrom)
+            var pagedArticles = articleEntities.
+                ToArticleModelList(pagerResult.PageCount)
+                .Skip(pagerResult.PageFrom)
                 .Take(numResultsPerPage);
 
             return pagedArticles;

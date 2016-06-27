@@ -23,7 +23,7 @@
 
             routes.MapRoute(
                 name: "GetAuthorPagedData",
-                url: "api/{controller}/{authorid}/{numResultsPerPage}/{currentPageNum}"
+                url: "api/{controller}/{authorid}/{numResultsPerPage}/{nextPageNum}"
             );
         }
     }

@@ -1,18 +1,22 @@
 ﻿namespace NewsLive.Angular.Api
 {
     using System.Web.Http;
+    using System.Threading.Tasks;
     using System.Collections.Generic;
 
+    using Caching;
     using DataAccess.Models;
     using DataAccess.Repository.Article;
 
     public class ArticleController : ApiController
     {
         IArticleRepository _repository;
+        ICacheService _cacheService;
         
-        public ArticleController(IArticleRepository repository)
+        public ArticleController(IArticleRepository repository, ICacheService cacheService)
         {
             _repository = repository;
+            _cacheService = cacheService;
         }
 
         // GET: api/Article/GetAllArticles
@@ -24,15 +28,22 @@
 
         // GET: api/Article/GetAllArticlesPaged/10/1
         [HttpGet]
-        public IEnumerable<ArticleModel> GetAllArticlesPaged(int numResultsPerPage, int currentPageNum)
+        public IEnumerable<ArticleModel> GetAllArticlesPaged(int numResultsPerPage, int nextPageNum)
         {
-            return _repository.GetAllArticlesPaged(numResultsPerPage, currentPageNum);
+            return _repository.GetAllArticlesPaged(numResultsPerPage, nextPageNum);
         }
 
-        public // GET: api/Article/GetAllArticlesByAuthorPaged/1/2/3
-        IEnumerable<ArticleModel> GetAllArticlesByAuthorPaged(int authorId, int numResultsPerPage, int currentPageNum)
+        [HttpGet]
+        public async Task<IEnumerable<ArticleModel>> GetAllArticlesPagedAsync(int numResultsPerPage, int nextPageNum)
         {
-            return _repository.GetAllArticlesByAuthorPaged(authorId, numResultsPerPage, currentPageNum);
+            return await _repository.GetAllArticlesPagedAsync(numResultsPerPage, nextPageNum);
+        }
+
+        // GET: api/Article/GetAllArticlesByAuthorPaged/1/2/3
+        [HttpGet]
+        public IEnumerable<ArticleModel> GetAllArticlesByAuthorPaged(int authorId, int numResultsPerPage, int nextPageNum)
+        {
+            return _repository.GetAllArticlesByAuthorPaged(authorId, numResultsPerPage, nextPageNum);
         }
 
         // GET: api/Article/GetGroupedArticleLikes

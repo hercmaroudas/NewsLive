@@ -1,9 +1,9 @@
 ﻿(function (angular) {
     angular.module('app')
-           .controller('articleController', ['$scope', '$http', '$routeParams', '$location', '$httpArticleService', '$memberSessionService', function ($scope, $http, $routeParams, $location, $httpArticleService, $memberSessionService) {
+           .controller('articleController', ['$scope', '$http', '$routeParams', '$locationService', '$httpArticleService', '$memberSessionService', function ($scope, $http, $routeParams, $locationService, $httpArticleService, $memberSessionService) {
                $scope.membership = $memberSessionService.getMembership();
                if ($scope.membership == null)
-                   return $location.path('/index');
+                   return $locationService.path('/index');
 
                // note: ( only use $scope.membership from here )
 
@@ -19,13 +19,12 @@
                        }
                    }
                };
-
+ 
                $scope.personId = $scope.membership.person.personId;
-               $scope.total = 100;
                $scope.heading = "";
                $scope.numPages = 0;
                $scope.nextPageNum = $routeParams.lastPageNum || 1;
-               $scope.numResultsPerPage = 3;
+               $scope.numResultsPerPage = 5;
 
                getArticles();
 

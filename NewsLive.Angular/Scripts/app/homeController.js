@@ -1,18 +1,20 @@
 ﻿(function (angular) {
     angular.module('app')
-           .controller('homeController', ['$scope', '$location', '$routeParams', '$httpArticleService', '$memberSessionService', function ($scope, $location, $routeParams, $httpArticleService, $memberSessionService) {
+           .controller('homeController', ['$scope', '$locationService', '$routeParams', '$httpArticleService', '$memberSessionService', function ($scope, $locationService, $routeParams, $httpArticleService, $memberSessionService) {
                $scope.membership = $memberSessionService.getMembership();
                if ($scope.membership === null)
-                   return $location.path('/index');
+                   return $locationService.path('/index');
 
                // note: ( only use $scope.membership from here )
 
                // TODO: ( Refactor this See articleEditController )
-               if ($scope.membership.person.isPublisher) {
-                   $location.path('/publisher-home-view');
-               }
-               else {
-                   $location.path('/employee-home-view');
+               if ($locationService.path() === '/home-view') {
+                   if ($scope.membership.person.isPublisher) {
+                       return $locationService.path('/publisher-home-view');
+                   }
+                   else {
+                       return $locationService.path('/employee-home-view');
+                   }
                }
 
                $scope.input = {
@@ -100,7 +102,7 @@
                };
 
                function getArticles() {
-                   var path = $location.path();
+                   var path = $locationService.path();
                    if (path == '/publisher-home-view') {
                        var authorId = $scope.membership.person.personId;
                        var promise = $httpArticleService.allArticlesByAuthor(

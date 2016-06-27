@@ -1,13 +1,16 @@
 ﻿(function (angular) {
     angular.module('app')
-        .service('$httpArticleService', ['$http', '$q', function ($http, $q) {
+        .service('$httpArticleService', ['$http', '$q', '$locationService', '$stopwatchService', function ($http, $q, $locationService, $stopwatchService) {
 
             this.allArticlesByAuthor = function (authorId, nextPageNum, numResultsPerPage) {
                 var deferred = $q.defer();
-                var request = { params: { 'authorId': authorId, 'numResultsPerPage': numResultsPerPage, 'currentPageNum': nextPageNum } };
-                $http.get('/api/article/getallarticlesbyauthorpaged', request).success(
+                var request = { params: { 'authorId': authorId, 'numResultsPerPage': numResultsPerPage, 'nextPageNum': nextPageNum } };
+                $stopwatchService.start();
+                $http.get($locationService.virtUrl() + '/api/article/getallarticlesbyauthorpaged', request).success(
                     function (response, status, headers, config) {
-                    deferred.resolve(response);
+                        $stopwatchService.stop()
+                        console.log($stopwatchService.lapsedFormatted('articlesByAuthorById'));
+                        deferred.resolve(response);
                 }).error(function (response, status, headers, config) {
                     deferred.reject(response);
                 });
@@ -16,9 +19,12 @@
 
             this.allArticles = function (nextPageNum, numResultsPerPage) {
                 var deferred = $q.defer();
-                var request = { params: { 'numResultsPerPage': numResultsPerPage, 'currentPageNum': nextPageNum } };
-                $http.get('/api/article/getallarticlespaged', request).success(
+                var request = { params:  { 'numResultsPerPage': numResultsPerPage, 'nextPageNum': nextPageNum } };
+                $stopwatchService.start();
+                $http.get($locationService.virtUrl() + '/api/article/getallarticlespagedasync', request).success(
                     function (response, status, headers, config) {
+                        $stopwatchService.stop()
+                        console.log($stopwatchService.lapsedFormatted('allArticles'));
                         deferred.resolve(response);
                 }).error(function (response, status, headers, config) {
                     deferred.reject(response);
@@ -29,7 +35,7 @@
             this.articleById = function (articleId) {
                 var deferred = $q.defer();
                 var request = { params: { 'articleId': articleId } };
-                $http.get('/api/article/getarticle', request).success(
+                $http.get($locationService.virtUrl() + '/api/article/getarticle', request).success(
                     function (response, status, headers, config) {
                         deferred.resolve(response);
                     }).error(function (response, status, headers, config) {
@@ -41,7 +47,7 @@
             this.deleteArticle = function (articleId) {
                 var deferred = $q.defer();
                 var jsondata = { params: { 'articleId': articleId } };
-                $http.delete('/api/article/deletepublishedarticle', jsondata).success(
+                $http.delete($locationService.virtUrl() + '/api/article/deletepublishedarticle', jsondata).success(
                     function (response, status, headers, config) {
                         var data = response;
                         deferred.resolve(response);
@@ -55,7 +61,7 @@
                 var deferred = $q.defer();
                 var comments = [];
                 var jsondata = { 'authorId': authorId, 'articleId': articleId, 'title': title, 'body': body, 'isPublished': isPublished, 'comments': [{ commentContent: comment }] };
-                $http.put('/api/article/updatepublishedarticle', jsondata).success(
+                $http.put($locationService.virtUrl() + '/api/article/updatepublishedarticle', jsondata).success(
                     function (response, status, headers, config) {
                         var data = response;
                         deferred.resolve(response);
@@ -68,7 +74,7 @@
             this.toggleLike = function (articleId, personId) {
                 var deferred = $q.defer();
                 var jsondata = { 'articleId': articleId, 'personId': personId };
-                $http.post('/api/articlelike/togglelike', jsondata).success(
+                $http.post($locationService.virtUrl() + '/api/articlelike/togglelike', jsondata).success(
                     function (response, status, headers, config) {
                         var data = response;
                         deferred.resolve(response);
@@ -81,7 +87,7 @@
             this.addComment = function (articleId, personId, comment) {
                 var deferred = $q.defer();
                 var jsondata = { 'articleId': articleId, 'personId': personId, 'commentContent': comment };
-                $http.put('/api/comment/addcomment', jsondata).success(
+                $http.put($locationService.virtUrl() + '/api/comment/addcomment', jsondata).success(
                     function (response, status, headers, config) {
                         var data = response;
                         deferred.resolve(response);

@@ -3,7 +3,7 @@
         <div ng-cloak ng-repeat="article in articles">
             <div class="col-sm-9 news-post-outter" >
                 <div class="news-post">
-                    <h2 class="news-post-title">{{article.title}}Sample news post</h2>
+                    <h2 class="news-post-title">{{article.title}}</h2>
                     <p ng-show="membership.person.isPublisher" class="pull-right">
                         <a ng-href="#/article-edit-view/{{article.articleId}}/{{nextPageNum}}">edit</a> 
                     |   <a ng-click="deleteArticle(article)" href="">delete</a>

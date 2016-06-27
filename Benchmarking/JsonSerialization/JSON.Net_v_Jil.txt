@@ -1,0 +1,28 @@
+Comparing Response Speeds after Changing Json Serializers (time in milliseconds)
+
+Attempt 1
+
+----------------------------------------
+Serializer | articlebyid | allarticles |  
+----------------------------------------
+Json.Net   | 1091        | 2587        |  
+Jil        | 1387        | 2489        |
+----------------------------------------
+
+Attempt 2
+
+----------------------------------------
+Serializer | articlebyid | allarticles |  
+----------------------------------------
+Json.Net   | 379        | 2470         |  
+Jil        | 561        | 2530         |
+----------------------------------------
+
+Attempt 3
+
+----------------------------------------
+Serializer | articlebyid | allarticles |  
+----------------------------------------
+Json.Net   | 513         | 2593        |  
+Jil        | 365         | 2479        |
+----------------------------------------

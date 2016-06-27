@@ -11,7 +11,11 @@ namespace NewsLive.Angular.App_Start
 
     using Ninject;
     using Ninject.Web.Common;
+    using Ninject.Web.Mvc.FilterBindingSyntax;
 
+    using Caching;
+    using Services;
+    using Services.Compression;
     using DataAccess;
     using DataAccess.Repository.Article;
     using DataAccess.Repository.Comment;
@@ -70,6 +74,8 @@ namespace NewsLive.Angular.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
+            kernel.Bind<ICacheService>().To<CacheService>();
+            kernel.Bind<IPagingService>().To<PagingService>();
             kernel.Bind<IDataService>().To<DataService>();
             kernel.Bind<IArticleRepository>().To<ArticleRepository>();
             kernel.Bind<ICommentRepository>().To<CommentRepository>();

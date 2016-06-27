@@ -3,7 +3,7 @@
     using System;
     using System.Linq;
     using System.Data.Entity;
-    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     // TODO: Separate into partial classes 
     public class DataService : IDataService
@@ -32,6 +32,11 @@
         public IQueryable<Article> GetArticles()
         {
             return _entities.Articles;
+        }
+
+        public async Task<IQueryable<Article>> GetArticlesAsync()
+        {
+            return await Task.Run(() => _entities.Articles);
         }
 
         public Article GetArticle(int articleId)

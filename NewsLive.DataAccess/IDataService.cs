@@ -1,8 +1,9 @@
 ﻿namespace NewsLive.DataAccess
 {
-    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Linq;
+    using System.Threading.Tasks;
+
     public interface IDataService
     {
         Membership GetMembership(string userName, string password);
@@ -10,6 +11,8 @@
         Article GetArticle(int articleId);
 
         IQueryable<Article> GetArticles();
+
+        Task<IQueryable<Article>> GetArticlesAsync();
 
         Article AddArticle(Article article);
 

@@ -1,13 +1,13 @@
 ﻿(function (angular) {
     angular.module('app')
-           .controller('articleEditController', ['$scope', '$http', '$routeParams', '$location', '$httpArticleService', '$memberSessionService', function ($scope, $http, $routeParams, $location, $httpArticleService, $memberSessionService) {
+           .controller('articleEditController', ['$scope', '$http', '$routeParams', '$locationService', '$httpArticleService', '$memberSessionService', function ($scope, $http, $routeParams, $locationService, $httpArticleService, $memberSessionService) {
                var routed = $routeParams;
                $scope.articleId = $routeParams.articleId;
                $scope.lastPageNum = $routeParams.lastPageNum;
 
                $scope.membership = $memberSessionService.getMembership();
                if ($scope.membership == null)
-                   return $location.path('/index');
+                   return $locationService.path('/index');
 
                // TODO: ( Put this in a service class and save URL history )
                if ($scope.membership.person.isPublisher) {

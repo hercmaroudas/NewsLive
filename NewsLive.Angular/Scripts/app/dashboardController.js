@@ -1,9 +1,9 @@
 ﻿(function (angular) {
     angular.module('app')
-           .controller('dashboardController', ['$scope', '$http', '$location', '$memberSessionService', function ($scope, $http, $location, $memberSessionService) {
+           .controller('dashboardController', ['$scope', '$http', '$locationService', '$memberSessionService', function ($scope, $http, $locationService, $memberSessionService) {
                $scope.membership = $memberSessionService.getMembership();
                if ($scope.membership === null)
-                   return $location.path('/index');
+                   return $locationService.path('/index');
 
            }]);
 })(angular);

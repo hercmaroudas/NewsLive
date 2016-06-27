@@ -65,12 +65,86 @@
 
             Assert.AreEqual(1, numberOfPages);
             Assert.AreEqual(4, numberOfArticles);
-        }        
+        }
+
+        [TestMethod]
+        public void GetAllArticlesPagedOneResultPerPageSmallDatasetTest()
+        {
+            var articles = articleRepository.GetAllArticlesPaged(1, 1);
+            int numberOfPages = articles.First().NumberOfPages;
+            int numberOfArticles = articles.Count();
+
+            Assert.AreEqual(4, numberOfPages);
+            Assert.AreEqual(1, numberOfArticles);
+
+            // one per page second page
+            articles = articleRepository.GetAllArticlesPaged(1, 2);
+            numberOfPages = articles.First().NumberOfPages;
+            numberOfArticles = articles.Count();
+
+            Assert.AreEqual(4, numberOfPages);
+            Assert.AreEqual(1, numberOfArticles);
+
+            // one per page third page
+            articles = articleRepository.GetAllArticlesPaged(1, 3);
+            numberOfPages = articles.First().NumberOfPages;
+            numberOfArticles = articles.Count();
+
+            Assert.AreEqual(4, numberOfPages);
+            Assert.AreEqual(1, numberOfArticles);
+
+            // one per page last page
+            articles = articleRepository.GetAllArticlesPaged(1, 4);
+            numberOfPages = articles.First().NumberOfPages;
+            numberOfArticles = articles.Count();
+
+            Assert.AreEqual(4, numberOfPages);
+            Assert.AreEqual(1, numberOfArticles);
+        }
+
+        [TestMethod]
+        public void GetAllArticlesPagedOneResultPerPageLargeDatasetTest()
+        {
+            var articles = pagedArticleRepository.GetAllArticlesPaged(1, 1);
+
+            int numberOfPages = articles.First().NumberOfPages;
+            int numberOfArticles = articles.Count();
+
+            Assert.AreEqual(167, numberOfPages);
+            Assert.AreEqual(1, numberOfArticles);
+
+            Assert.AreEqual(166, articles.First().ArticleId);
+            Assert.AreEqual(166, articles.Last().ArticleId);
+
+            // one result second page
+            articles = pagedArticleRepository.GetAllArticlesPaged(1, 2);
+
+            numberOfPages = articles.First().NumberOfPages;
+            numberOfArticles = articles.Count();
+
+            Assert.AreEqual(167, numberOfPages);
+            Assert.AreEqual(1, numberOfArticles);
+
+            Assert.AreEqual(164, articles.First().ArticleId);
+            Assert.AreEqual(164, articles.Last().ArticleId);
+
+            // one result last page
+            articles = pagedArticleRepository.GetAllArticlesPaged(1, 167);
+
+            numberOfPages = articles.First().NumberOfPages;
+            numberOfArticles = articles.Count();
+
+            Assert.AreEqual(167, numberOfPages);
+            Assert.AreEqual(1, numberOfArticles);
+
+            Assert.AreEqual(167, articles.First().ArticleId);
+            Assert.AreEqual(167, articles.Last().ArticleId);
+        }
 
         [TestMethod]
         public void GetAllArticlesPagedAndThereAreManyArticlesWithOddNumberAndLastPageIsValid()
         {
-            var articles = pagedArticleRepository.GetAllArticlesPaged(10, 16);
+            var articles = pagedArticleRepository.GetAllArticlesPaged(10, 17);
 
             int numberOfPages = articles.First().NumberOfPages;
             int numberOfArticles = articles.Count();
@@ -86,11 +160,11 @@
         public void GetAllArticlesByAuthorPagedTest()
         {
             var authorId = 2;
-            var currentPageNum = 5;
+            var nextPageNum = 5;
             var numResultsPerPage = 10;
 
             var numberOfArticles = pagedArticleRepository.GetAllArticlesByAuthorPaged(
-                    authorId, numResultsPerPage, currentPageNum).Count();
+                    authorId, numResultsPerPage, nextPageNum).Count();
 
             Assert.AreEqual(10, numberOfArticles);
         }
@@ -99,10 +173,10 @@
         public void GetAllPaublishedArticlesByAuthorPagedTest()
         {
             var authorId = 2;
-            var currentPageNum = 5;
+            var nextPageNum = 5;
             var numResultsPerPage = 10;
 
-            var numberOfArticles = pagedArticleRepository.GetAllArticlesByAuthorPaged(authorId, numResultsPerPage, currentPageNum)
+            var numberOfArticles = pagedArticleRepository.GetAllArticlesByAuthorPaged(authorId, numResultsPerPage, nextPageNum)
                 .Count();
 
             Assert.AreEqual(10, numberOfArticles);

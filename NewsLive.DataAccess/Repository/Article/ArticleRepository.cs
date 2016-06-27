@@ -4,49 +4,61 @@
     using System.Linq;
     using System.Data.Entity;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
+    using Services;
     using NewsLive.DataAccess.Models;
     using NewsLive.DataAccess.Mappings;
 
     public class ArticleRepository : IArticleRepository
     {
-        IDataService _service;
+        IDataService _dataSrvice;
+        IPagingService _pagingService;
 
         const int defaultPageCount = 1;
 
-        public ArticleRepository(IDataService service)
+        public ArticleRepository(IDataService dataService, IPagingService pagingService)
         {
-            _service = service;
+            _dataSrvice = dataService;
+            _pagingService = pagingService;
         }
 
         public IEnumerable<Models.ArticleModel> GetAllArticles()
         {
-            return _service.GetArticles().ToArticleModelList(defaultPageCount);
+            return _dataSrvice.GetArticles().ToArticleModelList(defaultPageCount);
         }
         public IEnumerable<Models.ArticleModel> GetAllArticlesByAuthor(int authorId)
         {
-            return _service.GetArticles()
+            return _dataSrvice.GetArticles()
                 .Where(a => a.PersonId == authorId).ToArticleModelList(defaultPageCount);
         }
 
-        public IEnumerable<Models.ArticleModel> GetAllArticlesPaged(int numResultsPerPage, int currentPageNum)
+        public IEnumerable<Models.ArticleModel> GetAllArticlesByAuthorPaged(int authorId, int numResultsPerPage, int nextPageNum)
         {
-            return _service.GetArticles()
-                .OrderByDescending(a => a.PublishDate).ToPagedArticleModelList(numResultsPerPage, currentPageNum);
-        }
-
-        public IEnumerable<Models.ArticleModel> GetAllArticlesByAuthorPaged(int authorId, int numResultsPerPage, int currentPageNum)
-        {
-            var authorArticles = _service.GetArticles()
+            var authorArticles = _dataSrvice.GetArticles()
                 .Where(a => a.PersonId == authorId)
                 .OrderByDescending(a => a.PublishDate);
 
-            return authorArticles.ToPagedArticleModelList(numResultsPerPage, currentPageNum);
+            return authorArticles.ToPagedArticleModelList(_pagingService, numResultsPerPage, nextPageNum);
+        }
+
+        public IEnumerable<Models.ArticleModel> GetAllArticlesPaged(int numResultsPerPage, int nextPageNum)
+        {
+            return _dataSrvice.GetArticles()
+                .OrderByDescending(a => a.PublishDate)
+                .ToPagedArticleModelList(_pagingService, numResultsPerPage, nextPageNum);
+        }
+
+        public async Task<IEnumerable<Models.ArticleModel>> GetAllArticlesPagedAsync(int numResultsPerPage, int nextPageNum)
+        {
+            return await Task.Run(() => _dataSrvice.GetArticlesAsync().Result
+                .OrderByDescending(a => a.PublishDate)
+                .ToPagedArticleModelList(_pagingService, numResultsPerPage, nextPageNum));
         }
 
         public Models.ArticleModel GetArticle(int articleId)
         {
-            var entity = _service.GetArticle(articleId);
+            var entity = _dataSrvice.GetArticle(articleId);
 
             if (entity == null)
                 return null;
@@ -58,7 +70,7 @@
         {
             var entityArticle = article.ToArticleEntity();
 
-            var savedArticle = _service.AddArticle(entityArticle);
+            var savedArticle = _dataSrvice.AddArticle(entityArticle);
 
             if (savedArticle == null)
                 return null;
@@ -81,12 +93,12 @@
                 PublishDate = DateTime.Now
             };
 
-            if (_service.UpdateArticle(updatedArticle) <= 0)
+            if (_dataSrvice.UpdateArticle(updatedArticle) <= 0)
                 return false;
 
             if (article.Comments != null && article.Comments.Count() > 0 && !string.IsNullOrWhiteSpace(article.Comments.FirstOrDefault().CommentContent))
             {
-                var updatedComment = _service.AddComment(new DataAccess.Comment()
+                var updatedComment = _dataSrvice.AddComment(new DataAccess.Comment()
                 {
                     PersonId = article.AuthorId,
                     ArticleId = article.ArticleId,
@@ -102,7 +114,7 @@
 
         public bool DeletePublishedArticle(int articleId)
         {
-            return Convert.ToBoolean(_service.DeleteArticle(articleId));
+            return Convert.ToBoolean(_dataSrvice.DeleteArticle(articleId));
             // ( To test deletions without deleting )
             // return Convert.ToBoolean((_service.GetArticle(articleId)!=null));
         }
@@ -118,8 +130,8 @@
         */
         public IEnumerable<GroupedArticleLikeModel> GetGroupedArticleLikes()
         {
-            var articles = _service.GetArticles();
-            var articleLikes = _service.GetArticleLikes();
+            var articles = _dataSrvice.GetArticles();
+            var articleLikes = _dataSrvice.GetArticleLikes();
 
             var groupedArticleLikes = articles
                 .Join(articleLikes, article => article.ArticleId, like => like.ArticleId,
@@ -143,5 +155,7 @@
 
             return groupedArticleLikes;
         }
+
+       
     }
 }

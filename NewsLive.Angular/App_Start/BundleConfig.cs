@@ -11,7 +11,9 @@
                 .Include(
                     "~/Scripts/angular.js",
                     "~/Scripts/angular-route.js")
-                .IncludeDirectory("~/Scripts/app", "*.js", true));
+                .IncludeDirectory("~/Scripts/app", "*.js", true)
+                .IncludeDirectory("~/Scripts/directives", "*.js", true)
+                .IncludeDirectory("~/Scripts/services", "*.js", true));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                                     "~/Scripts/bootstrap.*"));

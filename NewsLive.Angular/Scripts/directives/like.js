@@ -14,7 +14,6 @@
                    link: function (scope, element, attrs, ctrl) {
                        // ( setup when directive loads )
                        scope.unliked = !scope.liked;
-                       debugger;
                        scope.total = scope.likes.filter(function (x) {
                            return x.isLiked;
                        }).length;
