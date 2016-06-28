@@ -23,7 +23,7 @@
 
         public IEnumerable<Models.CommentModel> Comments { get; set; }
 
-        public IEnumerable<Models.ArticleLikeModel> Likes { get; set; }
+        public IEnumerable<Models.ArticleLikeModel> ArticleLikes { get; set; }
 
     }
 }

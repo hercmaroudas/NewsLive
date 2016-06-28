@@ -10,8 +10,9 @@
 namespace NewsLive.DataAccess
 {
     using System;
-
-    public partial class Like
+    using System.Collections.Generic;
+    
+    public partial class ArticleLike
     {
         public int ArticleId { get; set; }
         public int PersonId { get; set; }

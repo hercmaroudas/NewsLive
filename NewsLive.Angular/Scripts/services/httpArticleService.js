@@ -21,7 +21,7 @@
                 var deferred = $q.defer();
                 var request = { params:  { 'numResultsPerPage': numResultsPerPage, 'nextPageNum': nextPageNum } };
                 $stopwatchService.start();
-                $http.get($locationService.virtUrl() + '/api/article/getallarticlespagedasync', request).success(
+                $http.get($locationService.virtUrl() + '/api/article/getallarticlespaged', request).success(
                     function (response, status, headers, config) {
                         $stopwatchService.stop()
                         console.log($stopwatchService.lapsedFormatted('allArticles'));
@@ -60,7 +60,7 @@
             this.updateArticle = function (authorId, articleId, title, body, isPublished, comment) {
                 var deferred = $q.defer();
                 var comments = [];
-                var jsondata = { 'authorId': authorId, 'articleId': articleId, 'title': title, 'body': body, 'isPublished': isPublished, 'comments': [{ commentContent: comment }] };
+                var jsondata =  { 'authorId': authorId, 'articleId': articleId, 'title': title, 'body': body, 'isPublished': isPublished, 'comments': [{ commentText: comment }] };
                 $http.put($locationService.virtUrl() + '/api/article/updatepublishedarticle', jsondata).success(
                     function (response, status, headers, config) {
                         var data = response;
@@ -86,7 +86,7 @@
 
             this.addComment = function (articleId, personId, comment) {
                 var deferred = $q.defer();
-                var jsondata = { 'articleId': articleId, 'personId': personId, 'commentContent': comment };
+                var jsondata = { 'articleId': articleId, 'personId': personId, 'commentText': comment };
                 $http.put($locationService.virtUrl() + '/api/comment/addcomment', jsondata).success(
                     function (response, status, headers, config) {
                         var data = response;
@@ -100,11 +100,11 @@
             this.parseLikedByAuthor = function (articles, personId) {
                 for (var i = 0; i < articles.length; i++) {
                     var article = articles[i];
-                    if (article.likes.length > 0) {
-                        var index = article.likes.map(function (x) {
+                    if (article.articleLikes.length > 0) {
+                        var index = article.articleLikes.map(function (x) {
                             return x.personId;
                         }).indexOf(personId);
-                        articles[i].liked = (index >= 0 && articles[i].likes[index].isLiked == true);
+                        articles[i].liked = (index >= 0 && articles[i].articleLikes[index].isLiked == true);
                     }
                 };
             };

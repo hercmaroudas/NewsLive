@@ -12,53 +12,54 @@
 
     public class ArticleRepository : IArticleRepository
     {
-        IDataService _dataSrvice;
+        IDataService _dataService;
         IPagingService _pagingService;
 
         const int defaultPageCount = 1;
 
         public ArticleRepository(IDataService dataService, IPagingService pagingService)
         {
-            _dataSrvice = dataService;
+            _dataService = dataService;
             _pagingService = pagingService;
         }
 
-        public IEnumerable<Models.ArticleModel> GetAllArticles()
-        {
-            return _dataSrvice.GetArticles().ToArticleModelList(defaultPageCount);
-        }
         public IEnumerable<Models.ArticleModel> GetAllArticlesByAuthor(int authorId)
         {
-            return _dataSrvice.GetArticles()
-                .Where(a => a.PersonId == authorId).ToArticleModelList(defaultPageCount);
+            return _dataService.GetArticlesByAuthorId(authorId)
+                .ToArticleModelList(defaultPageCount);
         }
 
         public IEnumerable<Models.ArticleModel> GetAllArticlesByAuthorPaged(int authorId, int numResultsPerPage, int nextPageNum)
         {
-            var authorArticles = _dataSrvice.GetArticles()
-                .Where(a => a.PersonId == authorId)
-                .OrderByDescending(a => a.PublishDate);
+            var numArticles = _dataService.GetArticleByAuthorCount(authorId);
 
-            return authorArticles.ToPagedArticleModelList(_pagingService, numResultsPerPage, nextPageNum);
+            var result = _pagingService.CalculatePagingMetric(numArticles, numResultsPerPage, nextPageNum);
+
+            var min = result.PageFrom;
+            var max = numResultsPerPage;
+
+            var articles = _dataService.GetArticlesByAuthorId(authorId, min, max);
+
+            return articles.ToArticleModelList(result.PageCount);
         }
 
         public IEnumerable<Models.ArticleModel> GetAllArticlesPaged(int numResultsPerPage, int nextPageNum)
         {
-            return _dataSrvice.GetArticles()
-                .OrderByDescending(a => a.PublishDate)
-                .ToPagedArticleModelList(_pagingService, numResultsPerPage, nextPageNum);
+            var numArticles = _dataService.GetArticleCount();
+
+            var result = _pagingService.CalculatePagingMetric(numArticles, numResultsPerPage, nextPageNum);
+
+            var min = result.PageFrom;
+            var max = numResultsPerPage;
+
+            var articles = _dataService.GetArticles(min, max);
+
+            return articles.ToArticleModelList(result.PageCount);
         }
 
-        public async Task<IEnumerable<Models.ArticleModel>> GetAllArticlesPagedAsync(int numResultsPerPage, int nextPageNum)
+        public Models.ArticleModel GetArticleById(int articleId)
         {
-            return await Task.Run(() => _dataSrvice.GetArticlesAsync().Result
-                .OrderByDescending(a => a.PublishDate)
-                .ToPagedArticleModelList(_pagingService, numResultsPerPage, nextPageNum));
-        }
-
-        public Models.ArticleModel GetArticle(int articleId)
-        {
-            var entity = _dataSrvice.GetArticle(articleId);
+            var entity = _dataService.GetArticleById(articleId);
 
             if (entity == null)
                 return null;
@@ -70,7 +71,7 @@
         {
             var entityArticle = article.ToArticleEntity();
 
-            var savedArticle = _dataSrvice.AddArticle(entityArticle);
+            var savedArticle = _dataService.AddArticle(entityArticle);
 
             if (savedArticle == null)
                 return null;
@@ -80,7 +81,7 @@
 
         public bool UpdatePublishedArticle(Models.ArticleModel article)
         {
-            var existingArticle = GetArticle(article.ArticleId);
+            var existingArticle = GetArticleById(article.ArticleId);
 
             if (existingArticle == null)
                 return false;
@@ -93,16 +94,16 @@
                 PublishDate = DateTime.Now
             };
 
-            if (_dataSrvice.UpdateArticle(updatedArticle) <= 0)
+            if (_dataService.UpdateArticle(updatedArticle) <= 0)
                 return false;
 
-            if (article.Comments != null && article.Comments.Count() > 0 && !string.IsNullOrWhiteSpace(article.Comments.FirstOrDefault().CommentContent))
+            if (article.Comments != null && article.Comments.Count() > 0 && !string.IsNullOrWhiteSpace(article.Comments.FirstOrDefault().commentText))
             {
-                var updatedComment = _dataSrvice.AddComment(new DataAccess.Comment()
+                var updatedComment = _dataService.AddComment(new DataAccess.Comment()
                 {
                     PersonId = article.AuthorId,
                     ArticleId = article.ArticleId,
-                    Comment1 = article.Comments.FirstOrDefault().CommentContent
+                    CommentText = article.Comments.FirstOrDefault().commentText
                 });
 
                 return (updatedComment != null);
@@ -114,7 +115,7 @@
 
         public bool DeletePublishedArticle(int articleId)
         {
-            return Convert.ToBoolean(_dataSrvice.DeleteArticle(articleId));
+            return Convert.ToBoolean(_dataService.DeleteArticle(articleId));
             // ( To test deletions without deleting )
             // return Convert.ToBoolean((_service.GetArticle(articleId)!=null));
         }
@@ -130,8 +131,8 @@
         */
         public IEnumerable<GroupedArticleLikeModel> GetGroupedArticleLikes()
         {
-            var articles = _dataSrvice.GetArticles();
-            var articleLikes = _dataSrvice.GetArticleLikes();
+            var articles = _dataService.GetArticles();
+            var articleLikes = _dataService.GetArticleLikes();
 
             var groupedArticleLikes = articles
                 .Join(articleLikes, article => article.ArticleId, like => like.ArticleId,

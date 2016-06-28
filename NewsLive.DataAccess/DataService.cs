@@ -1,115 +1,159 @@
 ﻿namespace NewsLive.DataAccess
 {
     using System;
-    using System.Linq;
     using System.Data.Entity;
+    using System.Diagnostics;
+    using System.Linq;
     using System.Threading.Tasks;
 
-    // TODO: Separate into partial classes 
     public class DataService : IDataService
     {
-        NewsLiveDbContext _entities;
+        NewsLiveDbContext _dbContext;
 
         public DataService()
         {
-            _entities = new NewsLiveDbContext();
+            _dbContext = new NewsLiveDbContext();
 
-            _entities.Configuration.LazyLoadingEnabled = true;
+            _dbContext.Configuration.LazyLoadingEnabled = true;
+
+            _dbContext.Database.Log = s => Debug.WriteLine(s);
         }
 
         public DataService(NewsLiveDbContext entities)
         {
-            _entities = entities;
+            _dbContext = entities;
         }
 
         public Membership GetMembership(string userName, string password)
         {
-            return _entities.Memberships
+            return _dbContext.Memberships
                 .Where(m => m.UserName == userName && m.Password == password)
                 .FirstOrDefault();
         }
 
-        public IQueryable<Article> GetArticles()
+        public IQueryable<Article> GetArticles(int min = 0, int max = 0)
         {
-            return _entities.Articles;
+            if (max == 0 && min == max)
+                return _dbContext.Articles;
+            else
+            {
+                var ordered = _dbContext.Articles
+                    .AsNoTracking()
+                    .Where(a => a.PublishDate.HasValue)
+                    .OrderByDescending(a => a.PublishDate);
+
+                return _dbContext.Articles
+                    .AsNoTracking()
+                    .Where(a => a.PublishDate.HasValue)
+                    .OrderByDescending(a => a.PublishDate)
+                    .Skip(() => min)
+                    .Take(() => max);
+            }
+        }
+
+        public IQueryable<Article> GetArticlesByAuthorId(int personId, int min = 0, int max = 0)
+        {
+            if (max == 0 && min == max)
+                return _dbContext.Articles
+                    .Where(a => a.PersonId == personId);
+            else
+                return _dbContext.Articles
+                    .AsNoTracking()
+                    .Where(a => a.PublishDate.HasValue && a.PersonId == personId)
+                    .OrderByDescending(a => a.PublishDate)
+                    .Skip(() => min)
+                    .Take(() => max);
         }
 
         public async Task<IQueryable<Article>> GetArticlesAsync()
         {
-            return await Task.Run(() => _entities.Articles);
+            return await Task.Run(() => _dbContext.Articles);
         }
 
-        public Article GetArticle(int articleId)
+        public Article GetArticleById(int articleId)
         {
-            return _entities.Articles.Where(a => a.ArticleId == articleId).FirstOrDefault();
+            return _dbContext.Articles.Where(a => a.ArticleId == articleId).FirstOrDefault();
         }
 
         public Article AddArticle(Article article)
         {
-            article = _entities.Articles.Add(article);
-            _entities.SaveChanges();
+            article = _dbContext.Articles.Add(article);
+            _dbContext.SaveChanges();
             return article;
         }
 
         public int UpdateArticle(Article article)
         {
-            var databaseArticle = GetArticle(article.ArticleId);
+            var databaseArticle = GetArticleById(article.ArticleId);
             if (databaseArticle != null)
             { 
                 databaseArticle.Title = article.Title;
                 databaseArticle.Body = article.Body;
                 databaseArticle.PublishDate = article.PublishDate;
-                return _entities.SaveChanges();
+                return _dbContext.SaveChanges();
             }
             return 0;
         }
 
         public int DeleteArticle(int articleId)
         {
-            var databaseArticle = GetArticle(articleId);
+            var databaseArticle = GetArticleById(articleId);
             if (databaseArticle != null)
             {
-                databaseArticle = _entities.Articles.Remove(databaseArticle);
-                _entities.SaveChanges();
+                databaseArticle = _dbContext.Articles.Remove(databaseArticle);
+                _dbContext.SaveChanges();
             }
             return Convert.ToInt32(databaseArticle != null);
         }
 
         public Comment AddComment(Comment comment)
         {
-            comment = _entities.Comments.Add(comment);
-            _entities.SaveChanges();
+            comment = _dbContext.Comments.Add(comment);
+            _dbContext.SaveChanges();
             return comment;
         }
 
-        public IQueryable<Like> GetArticleLikes()
+        public IQueryable<ArticleLike> GetArticleLikes()
         {
-            return _entities.Likes;
+            return _dbContext.ArticleLikes;
         }
 
-        public Like GetArticleLike(int articleId, int personId)
+        public ArticleLike GetArticleLike(int articleId, int personId)
         {
-            return _entities.Likes.Where(l => l.ArticleId == articleId && l.PersonId == personId).FirstOrDefault();
+            return _dbContext.ArticleLikes.Where(l => l.ArticleId == articleId && l.PersonId == personId).FirstOrDefault();
         }
 
-        public Like AddArticleLike(Like articleLike)
+        public ArticleLike AddArticleLike(ArticleLike articleLike)
         {
-            articleLike = _entities.Likes.Add(articleLike);
-            _entities.SaveChanges();
+            articleLike = _dbContext.ArticleLikes.Add(articleLike);
+            _dbContext.SaveChanges();
             return articleLike;
         }
 
-        public int UpdateArticleLike(Like articleLike)
+        public int UpdateArticleLike(ArticleLike articleLike)
         {
             var databaseArticleLike = GetArticleLike(articleLike.ArticleId, articleLike.PersonId);
             databaseArticleLike.PersonId = articleLike.PersonId;
             databaseArticleLike.IsLiked = articleLike.IsLiked;
-            return _entities.SaveChanges();
+            return _dbContext.SaveChanges();
+        }
+
+        public int GetArticleCount()
+        {
+            return _dbContext.Articles.AsNoTracking()
+                .Where(a => a.PublishDate.HasValue).Count();
+        }
+
+        public int GetArticleByAuthorCount(int personId)
+        {
+            return _dbContext.Articles
+                .AsNoTracking()
+                .Where(a => a.PublishDate.HasValue && a.PersonId == personId).Count();
         }
 
         public EntityState MarkEntityAs<T>(T entity, EntityState entityState) where T : class
         {
-            return _entities.Entry(entity).State = entityState;
+            return _dbContext.Entry(entity).State = entityState;
         }
     }
 }

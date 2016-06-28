@@ -55,6 +55,9 @@
     <Compile Include="Article.cs">
       <DependentUpon>NewsLiveModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ArticleLike.cs">
+      <DependentUpon>NewsLiveModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Comment.cs">
       <DependentUpon>NewsLiveModel.tt</DependentUpon>
     </Compile>
@@ -63,9 +66,6 @@
     </Compile>
     <Compile Include="DataService.cs" />
     <Compile Include="IDataService.cs" />
-    <Compile Include="Like.cs">
-      <DependentUpon>NewsLiveModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Mappings\ArticleLikeMapping.cs" />
     <Compile Include="Mappings\ArticleMapping.cs" />
     <Compile Include="Mappings\CommentMapping.cs" />

@@ -6,11 +6,17 @@
 
     public interface IDataService
     {
+        int GetArticleCount();
+
+        int GetArticleByAuthorCount(int personId);
+
         Membership GetMembership(string userName, string password);
 
-        Article GetArticle(int articleId);
+        Article GetArticleById(int articleId);
 
-        IQueryable<Article> GetArticles();
+        IQueryable<Article> GetArticlesByAuthorId(int personId, int min = 0, int max = 0);
+
+        IQueryable<Article> GetArticles(int min = 0, int max = 0);
 
         Task<IQueryable<Article>> GetArticlesAsync();
 
@@ -20,13 +26,13 @@
 
         int DeleteArticle(int articleId);
 
-        IQueryable<Like> GetArticleLikes();
+        IQueryable<ArticleLike> GetArticleLikes();
 
-        Like GetArticleLike(int articleId, int personId);
+        ArticleLike GetArticleLike(int articleId, int personId);
 
-        Like AddArticleLike(Like articleLike);
+        ArticleLike AddArticleLike(ArticleLike articleLike);
 
-        int UpdateArticleLike(Like articleLike);
+        int UpdateArticleLike(ArticleLike articleLike);
 
         Comment AddComment(Comment comment);
 

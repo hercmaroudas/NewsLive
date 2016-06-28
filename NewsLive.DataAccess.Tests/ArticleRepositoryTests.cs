@@ -13,7 +13,7 @@
         [TestMethod]
         public void GetArticleTest()
         {
-            var article = articleRepository.GetArticle(1);
+            var article = articleRepository.GetArticleById(1);
 
             Assert.AreEqual(1, article.ArticleId);
             Assert.AreEqual(1, article.AuthorId);
@@ -25,22 +25,14 @@
             Assert.AreEqual(1, article.Author.PersonId);
 
             Assert.IsTrue(article.Comments.Count() > 0);
-            Assert.IsTrue(article.Likes.Count() > 0);
+            Assert.IsTrue(article.ArticleLikes.Count() > 0);
             Assert.IsTrue(article.PublishDate < DateTime.Now);
-        }
-
-        [TestMethod]
-        public void GetAllArticlesTest()
-        {
-            var numberOfArticles = articleRepository.GetAllArticles().Count();
-
-            Assert.AreEqual(4, numberOfArticles);
         }
 
         [TestMethod]
         public void GetAllPublishedArticlesTest()
         {
-            var numberOfArticles = articleRepository.GetAllArticles().Where(a => a.IsPublished).Count();
+            var numberOfArticles = articleRepository.GetAllArticlesPaged(100, 0).Where(a => a.IsPublished).Count();
 
             Assert.AreEqual(4, numberOfArticles);
         }
@@ -110,7 +102,7 @@
             int numberOfPages = articles.First().NumberOfPages;
             int numberOfArticles = articles.Count();
 
-            Assert.AreEqual(167, numberOfPages);
+            Assert.AreEqual(138, numberOfPages);
             Assert.AreEqual(1, numberOfArticles);
 
             Assert.AreEqual(166, articles.First().ArticleId);
@@ -122,57 +114,63 @@
             numberOfPages = articles.First().NumberOfPages;
             numberOfArticles = articles.Count();
 
-            Assert.AreEqual(167, numberOfPages);
+            Assert.AreEqual(138, numberOfPages);
             Assert.AreEqual(1, numberOfArticles);
 
             Assert.AreEqual(164, articles.First().ArticleId);
             Assert.AreEqual(164, articles.Last().ArticleId);
 
             // one result last page
-            articles = pagedArticleRepository.GetAllArticlesPaged(1, 167);
+            articles = pagedArticleRepository.GetAllArticlesPaged(1, 138);
 
             numberOfPages = articles.First().NumberOfPages;
             numberOfArticles = articles.Count();
 
-            Assert.AreEqual(167, numberOfPages);
+            Assert.AreEqual(138, numberOfPages);
             Assert.AreEqual(1, numberOfArticles);
 
-            Assert.AreEqual(167, articles.First().ArticleId);
-            Assert.AreEqual(167, articles.Last().ArticleId);
+            Assert.AreEqual(1, articles.First().ArticleId);
+            Assert.AreEqual(1, articles.Last().ArticleId);
         }
 
         [TestMethod]
         public void GetAllArticlesPagedAndThereAreManyArticlesWithOddNumberAndLastPageIsValid()
         {
-            var articles = pagedArticleRepository.GetAllArticlesPaged(10, 17);
+            var articles = pagedArticleRepository.GetAllArticlesPaged(10, 14);
 
             int numberOfPages = articles.First().NumberOfPages;
             int numberOfArticles = articles.Count();
 
-            Assert.AreEqual(17, numberOfPages);
-            Assert.AreEqual(7, numberOfArticles);
+            Assert.AreEqual(14, numberOfPages);
+            Assert.AreEqual(8, numberOfArticles);
 
-            Assert.AreEqual(155, articles.First().ArticleId);
-            Assert.AreEqual(167, articles.Last().ArticleId);
+            var firstArticle = articles.First();
+            var lastArticle = articles.Last();
+
+            Assert.AreEqual(8, firstArticle.ArticleId);
+            Assert.AreEqual(1, lastArticle.ArticleId);
+
+            Assert.IsTrue(firstArticle.PublishDate > lastArticle.PublishDate);
+
         }
 
         [TestMethod]
-        public void GetAllArticlesByAuthorPagedTest()
+        public void GetAllArticlesByAuthorPagedNonPublishedTest()
         {
-            var authorId = 2;
+            var authorId = 0;
             var nextPageNum = 5;
             var numResultsPerPage = 10;
 
             var numberOfArticles = pagedArticleRepository.GetAllArticlesByAuthorPaged(
                     authorId, numResultsPerPage, nextPageNum).Count();
 
-            Assert.AreEqual(10, numberOfArticles);
+            Assert.AreEqual(0, numberOfArticles);
         }
 
         [TestMethod]
         public void GetAllPaublishedArticlesByAuthorPagedTest()
         {
-            var authorId = 2;
+            var authorId = 1;
             var nextPageNum = 5;
             var numResultsPerPage = 10;
 
@@ -185,7 +183,7 @@
         [TestMethod]
         public void GetGroupedArticleLikesCheckTest()
         {
-            var articles = articleRepository.GetAllArticles();
+            var articles = articleRepository.GetAllArticlesPaged(100, 1);
             var articleLikes = articleLikeRepository.GetAllArticleLikes();
             Assert.IsTrue(articles.Count() == 4, "Actual article count is {0}", articles.Count());
             Assert.IsTrue(articleLikes.Count() == 4, "Actual article like count is {0}", articleLikes.Count());
@@ -259,7 +257,7 @@
         [TestMethod]
         public void UpdatePublishedArticleTest()
         {
-            var dbArticle = articleRepository.GetArticle(1);
+            var dbArticle = articleRepository.GetArticleById(1);
             var publishDate = dbArticle.PublishDate;
 
             var editedArticle = new Models.ArticleModel()
@@ -274,7 +272,7 @@
                 .Returns(1);
 
             var updated = articleRepository.UpdatePublishedArticle(editedArticle);
-            var dbArticleAfterEdit = articleRepository.GetArticle(editedArticle.ArticleId);
+            var dbArticleAfterEdit = articleRepository.GetArticleById(editedArticle.ArticleId);
 
             NewsLiveDbContextMock.Verify(m => m.SaveChanges(), Times.AtLeastOnce());
 
@@ -287,7 +285,7 @@
         [TestMethod]
         public void DeletePublishedArticleTest()
         {
-            var removedArticle = articleRepository.GetArticle(1);
+            var removedArticle = articleRepository.GetArticleById(1);
             Assert.IsNotNull(removedArticle);
 
             ArticleDbSetMock.Setup(m => m.Remove(It.IsAny<DataAccess.Article>()))

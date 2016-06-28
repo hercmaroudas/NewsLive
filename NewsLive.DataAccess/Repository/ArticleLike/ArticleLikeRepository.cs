@@ -23,7 +23,7 @@
             var fetchedALike = _service.GetArticleLike(articleId, personId);
             if (fetchedALike == null)
             {
-                var addedLike = _service.AddArticleLike(new DataAccess.Like()
+                var addedLike = _service.AddArticleLike(new DataAccess.ArticleLike()
                 {
                     ArticleId = articleId,
                     PersonId = personId,

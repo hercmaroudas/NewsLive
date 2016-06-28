@@ -9,8 +9,9 @@
 
 namespace NewsLive.DataAccess
 {
+    using System;
     using System.Collections.Generic;
-
+    
     public partial class Person
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -18,9 +19,9 @@ namespace NewsLive.DataAccess
         {
             this.Articles = new HashSet<Article>();
             this.Comments = new HashSet<Comment>();
-            this.Likes = new HashSet<Like>();
             this.CommentLikes = new HashSet<CommentLike>();
             this.Roles = new HashSet<Role>();
+            this.ArticleLikes = new HashSet<ArticleLike>();
         }
     
         public int PersonId { get; set; }
@@ -31,12 +32,12 @@ namespace NewsLive.DataAccess
         public virtual ICollection<Article> Articles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Like> Likes { get; set; }
         public virtual Membership Membership { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommentLike> CommentLikes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Role> Roles { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ArticleLike> ArticleLikes { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace NewsLive.DataAccess
         public Article()
         {
             this.Comments = new HashSet<Comment>();
-            this.Likes = new HashSet<Like>();
+            this.ArticleLikes = new HashSet<ArticleLike>();
         }
     
         public int ArticleId { get; set; }
@@ -31,6 +31,6 @@ namespace NewsLive.DataAccess
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Comment> Comments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Like> Likes { get; set; }
+        public virtual ICollection<ArticleLike> ArticleLikes { get; set; }
     }
 }

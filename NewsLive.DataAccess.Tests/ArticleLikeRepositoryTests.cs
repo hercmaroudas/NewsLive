@@ -19,7 +19,7 @@
         [TestMethod]
         public void ToggleArticleLikeAndArticleDoesNotExist()
         {
-            var newLike = new DataAccess.Like()
+            var newLike = new DataAccess.ArticleLike()
             { ArticleId = 10, PersonId = 3 };
 
             var nullLike = articleLikeRepository.ToggleLike(newLike.ArticleId, newLike.PersonId);
@@ -29,15 +29,15 @@
         [TestMethod]
         public void ToggleArticleLikeAndLikeDoesNotExistTest()
         {
-            var newLike = new DataAccess.Like()
+            var newLike = new DataAccess.ArticleLike()
                 { ArticleId = 2, PersonId = 3, IsLiked = true };
 
-            ArticleLikeDbSetMock.Setup(m => m.Add(It.IsAny<Like>()))
+            ArticleLikeDbSetMock.Setup(m => m.Add(It.IsAny<ArticleLike>()))
                 .Returns(newLike);
 
             var addedLike = articleLikeRepository.ToggleLike(newLike.ArticleId, newLike.PersonId);
 
-            ArticleLikeDbSetMock.Verify(m => m.Add(It.IsAny<DataAccess.Like>()), Times.AtLeastOnce());
+            ArticleLikeDbSetMock.Verify(m => m.Add(It.IsAny<DataAccess.ArticleLike>()), Times.AtLeastOnce());
             NewsLiveDbContextMock.Verify(m => m.SaveChanges(), Times.AtLeastOnce());
 
             Assert.IsNotNull(addedLike.IsLiked);
@@ -47,12 +47,12 @@
         [TestMethod]
         public void ToggleArticleLikeAndLikeDoesExistTest()
         {
-            var articleLike = new DataAccess.Like()
+            var articleLike = new DataAccess.ArticleLike()
                 { ArticleId = 1, PersonId = 2, IsLiked = true };
 
             NewsLiveDbContextMock.Setup(m => m.SaveChanges())
                 .Returns(1);
-            ArticleLikeDbSetMock.Setup(m => m.Add(It.IsAny<Like>()))
+            ArticleLikeDbSetMock.Setup(m => m.Add(It.IsAny<ArticleLike>()))
                 .Returns(articleLike);
 
             var updatedLike = articleLikeRepository.ToggleLike(articleLike.ArticleId, articleLike.PersonId);

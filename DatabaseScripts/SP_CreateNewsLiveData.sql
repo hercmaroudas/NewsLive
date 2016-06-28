@@ -250,7 +250,7 @@ BEGIN TRY
 
 		WHILE (@commentCount < @commentCountMax)
 		BEGIN
-			SELECT @comment = Comment
+			SELECT @comment = SUBSTRING(Comment, 1, 180)
 				FROM dbo.ArticleMock
 				WHERE Id = FLOOR(RAND()*(100-1)+1); 
 

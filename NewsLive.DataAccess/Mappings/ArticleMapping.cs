@@ -37,7 +37,7 @@
                     Body = entity.Body,
                     PublishDate = entity.PublishDate,
                     IsPublished = entity.PublishDate.HasValue,
-                    Likes = entity.Likes.ToArticleLikeModelList(),
+                    ArticleLikes = entity.ArticleLikes.ToArticleLikeModelList(),
                     Comments = entity.Comments.ToCommentModelList(),
                     Author = entity.Person.ToPersonModel(),
                 });
@@ -45,11 +45,11 @@
             return modelArticles;
         }
 
-        public static IEnumerable<Models.ArticleModel> ToPagedArticleModelList
-            (this IEnumerable<DataAccess.Article> articleEntities, IPagingService pagingService, int numResultsPerPage, int nextPageNum)
+        public static IEnumerable<Models.ArticleModel> ToPagedArticleModelList(this IEnumerable<DataAccess.Article> articleEntities, IPagingService pagingService, 
+            int numArticles, 
+            int numResultsPerPage, 
+            int nextPageNum)
         {
-            var numArticles = articleEntities.Count();
-
             var pagerResult = pagingService
                 .CalculatePagingMetric(numArticles, numResultsPerPage, nextPageNum);
 

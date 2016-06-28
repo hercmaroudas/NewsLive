@@ -12,12 +12,12 @@
                     <h2>{{heading}}</h2>
                     <p>{{article.body}}</p>
                 </div>
-                <like liked="article.liked" likes="article.likes" toggle="toggleLike(article.articleId)" ></like>
+                <like liked="article.liked" likes="article.articleLikes" toggle="toggleLike(article.articleId)" ></like>
                 <h2><span class="">Comments</span></h2>
                 <hr />
                 <div ng-repeat="comment in article.comments">
                     <blockquote class="news-blockquote">
-                        <p>{{comment.commentContent}}</p>
+                        <p>{{comment.commentText}}</p>
                     </blockquote>
                     <hr />
                 </div>

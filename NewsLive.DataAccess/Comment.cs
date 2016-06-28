@@ -23,7 +23,7 @@ namespace NewsLive.DataAccess
         public int CommentId { get; set; }
         public int ArticleId { get; set; }
         public Nullable<int> PersonId { get; set; }
-        public string Comment1 { get; set; }
+        public string CommentText { get; set; }
     
         public virtual Article Article { get; set; }
         public virtual Person Person { get; set; }

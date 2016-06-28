@@ -10,7 +10,7 @@
 
         public int? PersonId { get; set; }
 
-        public string CommentContent { get; set; }
+        public string commentText { get; set; }
 
         public virtual IEnumerable<Models.CommentLikeModel> CommentLikes { get; set; }
     }

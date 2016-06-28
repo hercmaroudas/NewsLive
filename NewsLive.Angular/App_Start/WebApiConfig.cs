@@ -2,14 +2,16 @@
 {
     using Bmbsqd.JilMediaFormatter;
     using Handlers;
+    using Newtonsoft.Json.Serialization;
     using System.Web.Http;
 
     public static class WebApiConfig
     {
         public static void Register(HttpConfiguration config)
         {
-            config.Formatters.Add(new JilMediaTypeFormatter(Jil.Options.CamelCase));
-            config.Formatters.Remove(config.Formatters.JsonFormatter);
+            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            //config.Formatters.Add(new JilMediaTypeFormatter(Jil.Options.CamelCase));
+            //config.Formatters.Remove(config.Formatters.JsonFormatter);
 
             config.MapHttpAttributeRoutes();
 
@@ -17,8 +19,6 @@
                 name: "ApiWithAction",
                 routeTemplate: "api/{controller}/{action}/{id}",
                 defaults: new { id = RouteParameter.Optional });
-
-            //http://localhost/NewsLive.Angular/api/membership/klwk/sss
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",

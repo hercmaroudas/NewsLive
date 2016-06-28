@@ -12,7 +12,7 @@
                 ArticleId = model.ArticleId,
                 CommentId = model.CommentId,
                 PersonId = model.PersonId,
-                Comment1 = model.CommentContent
+                CommentText = model.commentText
             };
         }
 
@@ -23,7 +23,7 @@
                 ArticleId = entity.ArticleId,
                 CommentId = entity.CommentId,
                 PersonId = entity.PersonId,
-                CommentContent = entity.Comment1
+                commentText = entity.CommentText
             };
         }
 
@@ -35,7 +35,7 @@
                     ArticleId = x.ArticleId,
                     CommentId = x.CommentId,
                     PersonId = x.PersonId,
-                    CommentContent = x.Comment1,
+                    commentText = x.CommentText,
                     CommentLikes = x.CommentLikes.Select(l =>
                         new Models.CommentLikeModel()
                         {

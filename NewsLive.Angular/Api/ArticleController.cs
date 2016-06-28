@@ -19,24 +19,11 @@
             _cacheService = cacheService;
         }
 
-        // GET: api/Article/GetAllArticles
-        [HttpGet]
-        public IEnumerable<ArticleModel> GetAllArticles()
-        {
-            return _repository.GetAllArticles();
-        }
-
         // GET: api/Article/GetAllArticlesPaged/10/1
         [HttpGet]
         public IEnumerable<ArticleModel> GetAllArticlesPaged(int numResultsPerPage, int nextPageNum)
         {
             return _repository.GetAllArticlesPaged(numResultsPerPage, nextPageNum);
-        }
-
-        [HttpGet]
-        public async Task<IEnumerable<ArticleModel>> GetAllArticlesPagedAsync(int numResultsPerPage, int nextPageNum)
-        {
-            return await _repository.GetAllArticlesPagedAsync(numResultsPerPage, nextPageNum);
         }
 
         // GET: api/Article/GetAllArticlesByAuthorPaged/1/2/3
@@ -57,7 +44,7 @@
         [HttpGet]
         public ArticleModel GetArticle(int articleId)
         {
-            return _repository.GetArticle(articleId);
+            return _repository.GetArticleById(articleId);
         }
 
         // GET: api/Article/GetAllArticlesByAuthor/5

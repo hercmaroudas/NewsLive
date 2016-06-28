@@ -5,9 +5,9 @@
 
     public static class ArticleLikeMapping
     {
-        public static DataAccess.Like ToArticleLikeEntity(this Models.ArticleLikeModel model)
+        public static DataAccess.ArticleLike ToArticleLikeEntity(this Models.ArticleLikeModel model)
         {
-            return new DataAccess.Like()
+            return new DataAccess.ArticleLike()
                 {
                     PersonId = model.PersonId,
                     ArticleId = model.ArticleId,
@@ -15,7 +15,7 @@
                 };
         }
 
-        public static Models.ArticleLikeModel ToArticleLikeModel(this DataAccess.Like entity)
+        public static Models.ArticleLikeModel ToArticleLikeModel(this DataAccess.ArticleLike entity)
         {
             return new Models.ArticleLikeModel()
                 {
@@ -25,7 +25,7 @@
                 };
         }
 
-        public static IEnumerable<Models.ArticleLikeModel> ToArticleLikeModelList(this IEnumerable<DataAccess.Like> entities)
+        public static IEnumerable<Models.ArticleLikeModel> ToArticleLikeModelList(this IEnumerable<DataAccess.ArticleLike> entities)
         {
             var modelLikes = entities.Select(entitiy =>
                 new Models.ArticleLikeModel()

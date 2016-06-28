@@ -33,20 +33,20 @@
         protected static Mock<DbSet<Article>> ArticleDbSetMock;
         protected static Mock<DbSet<Article>> PagedArticleDbSetMock;
         protected static Mock<DbSet<Comment>> CommentDbSetMock;
-        protected static Mock<DbSet<Like>> ArticleLikeDbSetMock;
+        protected static Mock<DbSet<ArticleLike>> ArticleLikeDbSetMock;
 
         protected static IQueryable<Membership> MembershipEntities;
         protected static IQueryable<Person> PeopleEntities;
         protected static IQueryable<Article> ArticleEntities;
         protected static IQueryable<Article> PagingArticleEntities;
         protected static IQueryable<Comment> CommentEntities;
-        protected static IQueryable<Like> ArticleLikeEntities;
+        protected static IQueryable<ArticleLike> ArticleLikeEntities;
 
         protected static ICollection<Role> PublisherMembershipRole;
         protected static ICollection<Role> EmployeeMembershipRole;
         protected static ICollection<Comment> ArticleOneComments;
-        protected static ICollection<Like> ArticleOneLikes;
-        protected static ICollection<Like> ArticleFourLikes;
+        protected static ICollection<ArticleLike> ArticleOneLikes;
+        protected static ICollection<ArticleLike> ArticleFourLikes;
         protected static ICollection<CommentLike> ArticleOneCommentOneLikes;
 
 
@@ -97,7 +97,7 @@
 
             SetupMockArticleLikeTestData();
             ArticleLikeDbSetMock = GetQueryableMockDbSet(ArticleLikeEntities.ToList());
-            NewsLiveDbContextMock.Setup(m => m.Likes).Returns(ArticleLikeDbSetMock.Object);
+            NewsLiveDbContextMock.Setup(m => m.ArticleLikes).Returns(ArticleLikeDbSetMock.Object);
         }
 
         protected static void SetupMockMembershipTestData()
@@ -146,20 +146,20 @@
 
             ArticleOneComments = new List<Comment>
             {
-                new Comment { PersonId = 2, ArticleId = 1, CommentId = 1, Comment1 = "Hey John I see you fancy your own post hey? :P", Article = ArticleEntities.ElementAt(0) },
-                new Comment { PersonId = 1, ArticleId = 1, CommentId = 2, Comment1 = "Hey Mary of course I do, I mean what a talent I am. :)", Article = ArticleEntities.ElementAt(0) },
+                new Comment { PersonId = 2, ArticleId = 1, CommentId = 1, CommentText = "Hey John I see you fancy your own post hey? :P", Article = ArticleEntities.ElementAt(0) },
+                new Comment { PersonId = 1, ArticleId = 1, CommentId = 2, CommentText = "Hey Mary of course I do, I mean what a talent I am. :)", Article = ArticleEntities.ElementAt(0) },
             };
 
-            ArticleOneLikes = new List<Like>
+            ArticleOneLikes = new List<ArticleLike>
             {
-                new Like { ArticleId = 1, PersonId = 1, IsLiked = true, Article = ArticleEntities.ElementAt(0), Person = PeopleEntities.ElementAt(0) },
-                new Like { ArticleId = 1, PersonId = 2, IsLiked = true, Article = ArticleEntities.ElementAt(0), Person = PeopleEntities.ElementAt(1) },
-                new Like { ArticleId = 1, PersonId = 3, IsLiked = true, Article = ArticleEntities.ElementAt(0), Person = PeopleEntities.ElementAt(2) }
+                new ArticleLike { ArticleId = 1, PersonId = 1, IsLiked = true, Article = ArticleEntities.ElementAt(0), Person = PeopleEntities.ElementAt(0) },
+                new ArticleLike { ArticleId = 1, PersonId = 2, IsLiked = true, Article = ArticleEntities.ElementAt(0), Person = PeopleEntities.ElementAt(1) },
+                new ArticleLike { ArticleId = 1, PersonId = 3, IsLiked = true, Article = ArticleEntities.ElementAt(0), Person = PeopleEntities.ElementAt(2) }
             };
 
-            ArticleFourLikes = new List<Like>
+            ArticleFourLikes = new List<ArticleLike>
             {
-                new Like { ArticleId = 3, PersonId = 2, IsLiked = true, Article = ArticleEntities.ElementAt(3), Person = PeopleEntities.ElementAt(1) }
+                new ArticleLike { ArticleId = 3, PersonId = 2, IsLiked = true, Article = ArticleEntities.ElementAt(3), Person = PeopleEntities.ElementAt(1) }
             };
 
             ArticleOneCommentOneLikes = new List<CommentLike>
@@ -167,8 +167,8 @@
                 new CommentLike { CommentId = 2, PersonId = 2, IsLiked = true, Comment = ArticleOneComments.ElementAt(1), Person = PeopleEntities.ElementAt(1) },
             };
 
-            ArticleEntities.ElementAt(0).Likes = ArticleOneLikes;
-            ArticleEntities.ElementAt(3).Likes = ArticleFourLikes;
+            ArticleEntities.ElementAt(0).ArticleLikes = ArticleOneLikes;
+            ArticleEntities.ElementAt(3).ArticleLikes = ArticleFourLikes;
             ArticleEntities.ElementAt(0).Comments = ArticleOneComments;
             ArticleEntities.ElementAt(0).Comments.ElementAt(0).CommentLikes = ArticleOneCommentOneLikes;
         }
@@ -180,7 +180,7 @@
                     CommentId = c.CommentId,    
                     ArticleId = c.ArticleId,
                     PersonId = c.PersonId, 
-                    Comment1 = c.Comment1 
+                    CommentText = c.CommentText 
                 })
                 .AsQueryable(); 
         }
@@ -188,7 +188,7 @@
         protected static void SetupMockArticleLikeTestData()
         {
             ArticleLikeEntities = 
-                    ArticleOneLikes.Select(c => new DataAccess.Like
+                    ArticleOneLikes.Select(c => new DataAccess.ArticleLike
                     {
                         ArticleId = c.ArticleId,
                         PersonId = c.PersonId,
@@ -197,7 +197,7 @@
                         Person = c.Person
                     })
                 .Union(
-                    ArticleFourLikes.Select(c => new DataAccess.Like
+                    ArticleFourLikes.Select(c => new DataAccess.ArticleLike
                     {
                         ArticleId = c.ArticleId,
                         PersonId = c.PersonId,
@@ -227,6 +227,7 @@
             dbSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(queryable.Expression);
             dbSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(queryable.ElementType);
             dbSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(() => queryable.GetEnumerator());
+            dbSet.Setup(d => d.AsNoTracking()).Returns(dbSet.Object);
             dbSet.Setup(d => d.Add(It.IsAny<T>())).Callback<T>((e) => sourceList.Add(e));
             dbSet.Setup(d => d.Remove(It.IsAny<T>())).Callback<T>((e) => sourceList.Remove(e));
 

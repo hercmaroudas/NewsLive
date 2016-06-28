@@ -10,7 +10,8 @@
 namespace NewsLive.DataAccess
 {
     using System;
-
+    using System.Collections.Generic;
+    
     public partial class Membership
     {
         public int PersonId { get; set; }

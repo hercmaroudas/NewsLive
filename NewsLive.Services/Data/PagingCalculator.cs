@@ -6,7 +6,7 @@
     {
         public PagedMetric CalculatePagingMetric(int repositoryCount, int numResultsPerPage, int nextPageNum)
         {
-            var pageCount = (int)Math.Ceiling((decimal)repositoryCount / numResultsPerPage);
+            var pageCount = (numResultsPerPage == 0) ? 0 : (int)Math.Ceiling((decimal)repositoryCount / numResultsPerPage);
 
             var pageFrom = (nextPageNum - 1) * numResultsPerPage;
 

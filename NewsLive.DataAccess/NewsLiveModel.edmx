@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="NewsLiveModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="NewsLiveModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Article">
           <Key>
             <PropertyRef Name="ArticleId" />
@@ -15,6 +15,15 @@
           <Property Name="Body" Type="nvarchar(max)" Nullable="false" />
           <Property Name="PublishDate" Type="datetime" />
         </EntityType>
+        <EntityType Name="ArticleLike">
+          <Key>
+            <PropertyRef Name="ArticleId" />
+            <PropertyRef Name="PersonId" />
+          </Key>
+          <Property Name="ArticleId" Type="int" Nullable="false" />
+          <Property Name="PersonId" Type="int" Nullable="false" />
+          <Property Name="IsLiked" Type="bit" />
+        </EntityType>
         <EntityType Name="Comment">
           <Key>
             <PropertyRef Name="CommentId" />
@@ -22,7 +31,7 @@
           <Property Name="CommentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ArticleId" Type="int" Nullable="false" />
           <Property Name="PersonId" Type="int" />
-          <Property Name="Comment" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CommentText" Type="nvarchar(max)" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -32,15 +41,6 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
             <PropertyRef Name="PersonId" />
           </Key>
           <Property Name="CommentId" Type="int" Nullable="false" />
-          <Property Name="PersonId" Type="int" Nullable="false" />
-          <Property Name="IsLiked" Type="bit" />
-        </EntityType>
-        <EntityType Name="Like">
-          <Key>
-            <PropertyRef Name="ArticleId" />
-            <PropertyRef Name="PersonId" />
-          </Key>
-          <Property Name="ArticleId" Type="int" Nullable="false" />
           <Property Name="PersonId" Type="int" Nullable="false" />
           <Property Name="IsLiked" Type="bit" />
         </EntityType>
@@ -139,24 +139,24 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
         </Association>
         <Association Name="FK_Like_Article">
           <End Role="Article" Type="Self.Article" Multiplicity="1" />
-          <End Role="Like" Type="Self.Like" Multiplicity="*" />
+          <End Role="ArticleLike" Type="Self.ArticleLike" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Article">
               <PropertyRef Name="ArticleId" />
             </Principal>
-            <Dependent Role="Like">
+            <Dependent Role="ArticleLike">
               <PropertyRef Name="ArticleId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Like_Person">
           <End Role="Person" Type="Self.Person" Multiplicity="1" />
-          <End Role="Like" Type="Self.Like" Multiplicity="*" />
+          <End Role="ArticleLike" Type="Self.ArticleLike" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Person">
               <PropertyRef Name="PersonId" />
             </Principal>
-            <Dependent Role="Like">
+            <Dependent Role="ArticleLike">
               <PropertyRef Name="PersonId" />
             </Dependent>
           </ReferentialConstraint>
@@ -199,8 +199,8 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
         </Association>
         <EntityContainer Name="NewsLiveModelStoreContainer">
           <EntitySet Name="Article" EntityType="Self.Article" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ArticleLike" EntityType="Self.ArticleLike" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Comment" EntityType="Self.Comment" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Like" EntityType="Self.Like" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Membership" EntityType="Self.Membership" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Person" EntityType="Self.Person" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PersonRole" EntityType="Self.PersonRole" Schema="dbo" store:Type="Tables" />
@@ -234,11 +234,11 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
           </AssociationSet>
           <AssociationSet Name="FK_Like_Article" Association="Self.FK_Like_Article">
             <End Role="Article" EntitySet="Article" />
-            <End Role="Like" EntitySet="Like" />
+            <End Role="ArticleLike" EntitySet="ArticleLike" />
           </AssociationSet>
           <AssociationSet Name="FK_Like_Person" Association="Self.FK_Like_Person">
             <End Role="Person" EntitySet="Person" />
-            <End Role="Like" EntitySet="Like" />
+            <End Role="ArticleLike" EntitySet="ArticleLike" />
           </AssociationSet>
           <AssociationSet Name="FK_Membership_Person" Association="Self.FK_Membership_Person">
             <End Role="Person" EntitySet="Person" />
@@ -253,8 +253,7 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
             <End Role="PersonRole" EntitySet="PersonRole" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="NewsLiveModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -269,7 +268,7 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
           <Property Name="PublishDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Person" Relationship="Self.FK_Article_Person" FromRole="Article" ToRole="Person" />
           <NavigationProperty Name="Comments" Relationship="Self.FK_Comment_Article" FromRole="Article" ToRole="Comment" />
-          <NavigationProperty Name="Likes" Relationship="Self.FK_Like_Article" FromRole="Article" ToRole="Like" />
+          <NavigationProperty Name="ArticleLikes" Relationship="NewsLiveModel.FK_Like_Article1" FromRole="Article" ToRole="ArticleLike" />
         </EntityType>
         <EntityType Name="Comment">
           <Key>
@@ -278,21 +277,10 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
           <Property Name="CommentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ArticleId" Type="Int32" Nullable="false" />
           <Property Name="PersonId" Type="Int32" />
-          <Property Name="Comment1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Article" Relationship="Self.FK_Comment_Article" FromRole="Comment" ToRole="Article" />
           <NavigationProperty Name="Person" Relationship="Self.FK_Comment_Person" FromRole="Comment" ToRole="Person" />
           <NavigationProperty Name="CommentLikes" Relationship="Self.FK_CommentLike_Comment" FromRole="Comment" ToRole="CommentLike" />
-        </EntityType>
-        <EntityType Name="Like">
-          <Key>
-            <PropertyRef Name="ArticleId" />
-            <PropertyRef Name="PersonId" />
-          </Key>
-          <Property Name="ArticleId" Type="Int32" Nullable="false" />
-          <Property Name="PersonId" Type="Int32" Nullable="false" />
-          <Property Name="IsLiked" Type="Boolean" />
-          <NavigationProperty Name="Article" Relationship="Self.FK_Like_Article" FromRole="Like" ToRole="Article" />
-          <NavigationProperty Name="Person" Relationship="Self.FK_Like_Person" FromRole="Like" ToRole="Person" />
+          <Property Name="CommentText" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Membership">
           <Key>
@@ -314,10 +302,10 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
           <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Articles" Relationship="Self.FK_Article_Person" FromRole="Person" ToRole="Article" />
           <NavigationProperty Name="Comments" Relationship="Self.FK_Comment_Person" FromRole="Person" ToRole="Comment" />
-          <NavigationProperty Name="Likes" Relationship="Self.FK_Like_Person" FromRole="Person" ToRole="Like" />
           <NavigationProperty Name="Membership" Relationship="Self.FK_Membership_Person" FromRole="Person" ToRole="Membership" />
           <NavigationProperty Name="CommentLikes" Relationship="Self.FK_CommentLike_Person" FromRole="Person" ToRole="CommentLike" />
           <NavigationProperty Name="Roles" Relationship="Self.PersonRole" FromRole="Person" ToRole="Role" />
+          <NavigationProperty Name="ArticleLikes" Relationship="NewsLiveModel.FK_Like_Person1" FromRole="Person" ToRole="ArticleLike" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -362,18 +350,6 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Like_Article">
-          <End Role="Article" Type="Self.Article" Multiplicity="1" />
-          <End Role="Like" Type="Self.Like" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Article">
-              <PropertyRef Name="ArticleId" />
-            </Principal>
-            <Dependent Role="Like">
-              <PropertyRef Name="ArticleId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Comment_Person">
           <End Role="Person" Type="Self.Person" Multiplicity="0..1" />
           <End Role="Comment" Type="Self.Comment" Multiplicity="*" />
@@ -395,18 +371,6 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
             </Principal>
             <Dependent Role="CommentLike">
               <PropertyRef Name="CommentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Like_Person">
-          <End Role="Person" Type="Self.Person" Multiplicity="1" />
-          <End Role="Like" Type="Self.Like" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Person">
-              <PropertyRef Name="PersonId" />
-            </Principal>
-            <Dependent Role="Like">
-              <PropertyRef Name="PersonId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -441,7 +405,6 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
         <EntityContainer Name="NewsLiveDbContext" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Articles" EntityType="Self.Article" />
           <EntitySet Name="Comments" EntityType="Self.Comment" />
-          <EntitySet Name="Likes" EntityType="Self.Like" />
           <EntitySet Name="Memberships" EntityType="Self.Membership" />
           <EntitySet Name="People" EntityType="Self.Person" />
           <EntitySet Name="Roles" EntityType="Self.Role" />
@@ -454,10 +417,6 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
             <End Role="Article" EntitySet="Articles" />
             <End Role="Comment" EntitySet="Comments" />
           </AssociationSet>
-          <AssociationSet Name="FK_Like_Article" Association="Self.FK_Like_Article">
-            <End Role="Article" EntitySet="Articles" />
-            <End Role="Like" EntitySet="Likes" />
-          </AssociationSet>
           <AssociationSet Name="FK_Comment_Person" Association="Self.FK_Comment_Person">
             <End Role="Person" EntitySet="People" />
             <End Role="Comment" EntitySet="Comments" />
@@ -465,10 +424,6 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
           <AssociationSet Name="FK_CommentLike_Comment" Association="Self.FK_CommentLike_Comment">
             <End Role="Comment" EntitySet="Comments" />
             <End Role="CommentLike" EntitySet="CommentLikes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Like_Person" Association="Self.FK_Like_Person">
-            <End Role="Person" EntitySet="People" />
-            <End Role="Like" EntitySet="Likes" />
           </AssociationSet>
           <AssociationSet Name="FK_Membership_Person" Association="Self.FK_Membership_Person">
             <End Role="Person" EntitySet="People" />
@@ -482,7 +437,51 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
             <End Role="Person" EntitySet="People" />
             <End Role="Role" EntitySet="Roles" />
           </AssociationSet>
+          <EntitySet Name="ArticleLikes" EntityType="NewsLiveModel.ArticleLike" />
+          <AssociationSet Name="FK_Like_Article1" Association="NewsLiveModel.FK_Like_Article1">
+            <End Role="Article" EntitySet="Articles" />
+            <End Role="ArticleLike" EntitySet="ArticleLikes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Like_Person1" Association="NewsLiveModel.FK_Like_Person1">
+            <End Role="Person" EntitySet="People" />
+            <End Role="ArticleLike" EntitySet="ArticleLikes" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="ArticleLike">
+          <Key>
+            <PropertyRef Name="ArticleId" />
+            <PropertyRef Name="PersonId" />
+          </Key>
+          <Property Name="ArticleId" Type="Int32" Nullable="false" />
+          <Property Name="PersonId" Type="Int32" Nullable="false" />
+          <Property Name="IsLiked" Type="Boolean" />
+          <NavigationProperty Name="Article" Relationship="NewsLiveModel.FK_Like_Article1" FromRole="ArticleLike" ToRole="Article" />
+          <NavigationProperty Name="Person" Relationship="NewsLiveModel.FK_Like_Person1" FromRole="ArticleLike" ToRole="Person" />
+        </EntityType>
+        <Association Name="FK_Like_Article1">
+          <End Type="NewsLiveModel.Article" Role="Article" Multiplicity="1" />
+          <End Type="NewsLiveModel.ArticleLike" Role="ArticleLike" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Article">
+              <PropertyRef Name="ArticleId" />
+            </Principal>
+            <Dependent Role="ArticleLike">
+              <PropertyRef Name="ArticleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Like_Person1">
+          <End Type="NewsLiveModel.Person" Role="Person" Multiplicity="1" />
+          <End Type="NewsLiveModel.ArticleLike" Role="ArticleLike" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Person">
+              <PropertyRef Name="PersonId" />
+            </Principal>
+            <Dependent Role="ArticleLike">
+              <PropertyRef Name="PersonId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -503,19 +502,10 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
           <EntitySetMapping Name="Comments">
             <EntityTypeMapping TypeName="NewsLiveModel.Comment">
               <MappingFragment StoreEntitySet="Comment">
+                <ScalarProperty Name="CommentText" ColumnName="CommentText" />
                 <ScalarProperty Name="CommentId" ColumnName="CommentId" />
                 <ScalarProperty Name="ArticleId" ColumnName="ArticleId" />
                 <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="Comment1" ColumnName="Comment" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Likes">
-            <EntityTypeMapping TypeName="NewsLiveModel.Like">
-              <MappingFragment StoreEntitySet="Like">
-                <ScalarProperty Name="ArticleId" ColumnName="ArticleId" />
-                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
-                <ScalarProperty Name="IsLiked" ColumnName="IsLiked" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -564,6 +554,15 @@ warning 6002: The table/view 'NewsLive.dbo.CommentLike' does not have a primary 
               <ScalarProperty Name="RoleId" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="ArticleLikes">
+            <EntityTypeMapping TypeName="NewsLiveModel.ArticleLike">
+              <MappingFragment StoreEntitySet="ArticleLike">
+                <ScalarProperty Name="IsLiked" ColumnName="IsLiked" />
+                <ScalarProperty Name="PersonId" ColumnName="PersonId" />
+                <ScalarProperty Name="ArticleId" ColumnName="ArticleId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
