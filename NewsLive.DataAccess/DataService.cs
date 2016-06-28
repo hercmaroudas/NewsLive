@@ -16,7 +16,7 @@
 
             _dbContext.Configuration.LazyLoadingEnabled = true;
 
-            _dbContext.Database.Log = s => Debug.WriteLine(s);
+           // _dbContext.Database.Log = s => Debug.WriteLine(s);
         }
 
         public DataService(NewsLiveDbContext entities)
@@ -34,28 +34,24 @@
         public IQueryable<Article> GetArticles(int min = 0, int max = 0)
         {
             if (max == 0 && min == max)
-                return _dbContext.Articles;
-            else
-            {
-                var ordered = _dbContext.Articles
-                    .AsNoTracking()
+                return _dbContext.Articles
                     .Where(a => a.PublishDate.HasValue)
                     .OrderByDescending(a => a.PublishDate);
-
+            else
                 return _dbContext.Articles
                     .AsNoTracking()
                     .Where(a => a.PublishDate.HasValue)
                     .OrderByDescending(a => a.PublishDate)
                     .Skip(() => min)
                     .Take(() => max);
-            }
         }
 
         public IQueryable<Article> GetArticlesByAuthorId(int personId, int min = 0, int max = 0)
         {
             if (max == 0 && min == max)
                 return _dbContext.Articles
-                    .Where(a => a.PersonId == personId);
+                    .Where(a => a.PublishDate.HasValue && a.PersonId == personId)
+                    .OrderByDescending(a => a.PublishDate);
             else
                 return _dbContext.Articles
                     .AsNoTracking()

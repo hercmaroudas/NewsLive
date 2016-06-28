@@ -1,7 +1,6 @@
 ﻿namespace NewsLive.Angular.Api
 {
     using System.Web.Http;
-    using System.Threading.Tasks;
     using System.Collections.Generic;
 
     using Caching;

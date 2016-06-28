@@ -195,15 +195,15 @@
             var groupLikeOne = groupedArticles.Where((l, index) => index == 0).FirstOrDefault();
             var groupLikeTwo = groupedArticles.Where((l, index) => index == 1).FirstOrDefault();
 
-            var expectedArticleIdLikesOne = 1;
-            var expectedLikesOneCount = 3;
-            var expectedArticleTitleLikesOne = "Welcome to John Jack's First News Article";
-            var expectedArticleAuthorNameLikesOne = "John";
+            var expectedArticleIdLikesOne = 3;
+            var expectedLikesOneCount = 1;
+            var expectedArticleTitleLikesOne = "Welcome to Marry Murray's News Article";
+            var expectedArticleAuthorNameLikesOne = "Marry";
 
-            var expectedArticleIdLikesTwo = 3;
-            var expectedLikesTwoCount = 1;
-            var expectedArticleTitleLikesTwo = "Welcome to Marry Murray's News Article";
-            var expectedArticleAuthorNameLikesTwo = "Marry";
+            var expectedArticleIdLikesTwo = 1;
+            var expectedLikesTwoCount = 3;
+            var expectedArticleTitleLikesTwo = "Welcome to John Jack's First News Article";
+            var expectedArticleAuthorNameLikesTwo = "John";
 
             Assert.AreEqual(expectedArticleIdLikesOne, groupLikeOne.ArticleId);
             Assert.AreEqual(expectedLikesOneCount, groupLikeOne.LikeCount);

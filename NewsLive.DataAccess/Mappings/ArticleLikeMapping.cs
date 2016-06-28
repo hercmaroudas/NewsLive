@@ -20,7 +20,6 @@
             return new Models.ArticleLikeModel()
                 {
                     PersonId = entity.PersonId,
-                    ArticleId = entity.ArticleId,
                     IsLiked = entity.IsLiked
                 };
         }
@@ -30,7 +29,6 @@
             var modelLikes = entities.Select(entitiy =>
                 new Models.ArticleLikeModel()
                 {
-                     ArticleId = entitiy.ArticleId,
                      PersonId = entitiy.PersonId,
                      IsLiked = entitiy.IsLiked
                 });

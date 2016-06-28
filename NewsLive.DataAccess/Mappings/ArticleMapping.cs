@@ -25,7 +25,8 @@
             return ToArticleModelList(new List<DataAccess.Article>() { entity }, 1).FirstOrDefault();
         }
 
-        public static IEnumerable<Models.ArticleModel> ToArticleModelList(this IEnumerable<DataAccess.Article> entities, int pageCount)
+        public static IEnumerable<Models.ArticleModel> ToArticleModelList(this IEnumerable<DataAccess.Article> entities, 
+            int pageCount)
         {
             var modelArticles = entities.Select(entity =>
                 new Models.ArticleModel()
@@ -45,7 +46,8 @@
             return modelArticles;
         }
 
-        public static IEnumerable<Models.ArticleModel> ToPagedArticleModelList(this IEnumerable<DataAccess.Article> articleEntities, IPagingService pagingService, 
+        public static IEnumerable<Models.ArticleModel> ToPagedArticleModelList(this IEnumerable<DataAccess.Article> articleEntities, 
+            IPagingService pagingService, 
             int numArticles, 
             int numResultsPerPage, 
             int nextPageNum)
