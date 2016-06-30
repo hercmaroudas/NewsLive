@@ -6,37 +6,56 @@
 
     public interface IDataService
     {
-        int GetArticleCount();
-
-        int GetArticleByAuthorCount(int personId);
-
-        Membership GetMembership(string userName, string password);
-
-        Article GetArticleById(int articleId);
-
-        IQueryable<Article> GetArticlesByAuthorId(int personId, int min = 0, int max = 0);
-
-        IQueryable<Article> GetArticles(int min = 0, int max = 0);
-
-        Task<IQueryable<Article>> GetArticlesAsync();
-
         Article AddArticle(Article article);
 
-        int UpdateArticle(Article article);
-
-        int DeleteArticle(int articleId);
-
-        IQueryable<ArticleLike> GetArticleLikes();
-
-        ArticleLike GetArticleLike(int articleId, int personId);
+        Task<Article> AddArticleAsync(Article article);
 
         ArticleLike AddArticleLike(ArticleLike articleLike);
 
-        int UpdateArticleLike(ArticleLike articleLike);
+        Task<ArticleLike> AddArticleLikeAsync(ArticleLike articleLike);
 
         Comment AddComment(Comment comment);
 
-        EntityState MarkEntityAs<T>(T entity, EntityState entityState) where T : class;
+        Task<Comment> AddCommentAsync(Comment comment);
 
+        int DeleteArticle(int articleId);
+
+        Task<int> DeleteArticleAsync(int articleId);
+
+        int GetArticleByAuthorCount(int personId);
+
+        Task<int> GetArticleByAuthorCountAsync(int personId);
+
+        Article GetArticleById(int articleId);
+
+        Task<Article> GetArticleByIdAsync(int articleId);
+
+        int GetArticleCount();
+
+        Task<int> GetArticleCountAsync();
+
+        ArticleLike GetArticleLike(int articleId, int personId);
+
+        Task<ArticleLike> GetArticleLikeAsync(int articleId, int personId);
+
+        IQueryable<ArticleLike> GetArticleLikes();
+
+        IQueryable<Article> GetArticles(int min = 0, int max = 0);
+
+        IQueryable<Article> GetArticlesByAuthorId(int personId, int min = 0, int max = 0);
+
+        Membership GetMembership(string userName, string password);
+
+        Task<Membership> GetMembershipAsync(string userName, string password);
+
+        int UpdateArticle(Article article);
+
+        Task<int> UpdateArticleAsync(Article article);
+
+        int UpdateArticleLike(ArticleLike articleLike);
+
+        Task<int> UpdateArticleLikeAsync(ArticleLike articleLike);
+
+        EntityState MarkEntityAs<T>(T entity, EntityState entityState) where T : class;
     }
 }

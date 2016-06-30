@@ -1,7 +1,8 @@
 ﻿namespace NewsLive.DataAccess.Repository.Membership
 {
+    using System.Threading.Tasks;
     using NewsLive.DataAccess.Mappings;
-
+    
     public class MembershipRepository : IMembershipRepository
     {
         IDataService _service;
@@ -16,6 +17,15 @@
             var membershipEntity = _service.GetMembership(userName, string.IsNullOrEmpty(password) ? null : password);
 
             return membershipEntity == null ? 
+                null :
+                membershipEntity.ToMembershipModel();
+        }
+
+        public async Task<Models.MembershipModel> LoginAsync(string userName, string password)
+        {
+            var membershipEntity = await _service.GetMembershipAsync(userName, string.IsNullOrEmpty(password) ? null : password);
+
+            return membershipEntity == null ?
                 null :
                 membershipEntity.ToMembershipModel();
         }

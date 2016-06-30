@@ -23,10 +23,15 @@
             _pagingService = pagingService;
         }
 
-        public IEnumerable<Models.ArticleModel> GetAllArticlesByAuthor(int authorId)
+        public IEnumerable<Models.ArticleModel> GetAllArticlesByAuthor(int personId)
         {
-            return _dataService.GetArticlesByAuthorId(authorId)
+            return _dataService.GetArticlesByAuthorId(personId)
                 .ToArticleModelList(defaultPageCount);
+        }
+
+        public async Task<IEnumerable<Models.ArticleModel>> GetAllArticlesByAuthorAsync(int personId)
+        {
+            return await Task.Run(() => _dataService.GetArticlesByAuthorId(personId).ToArticleModelList(defaultPageCount));
         }
 
         public IEnumerable<Models.ArticleModel> GetAllArticlesByAuthorPaged(int authorId, int numResultsPerPage, int nextPageNum)
@@ -39,6 +44,20 @@
             var max = numResultsPerPage;
 
             var articles = _dataService.GetArticlesByAuthorId(authorId, min, max);
+
+            return articles.ToArticleModelList(result.PageCount);
+        }
+
+        public async Task<IEnumerable<Models.ArticleModel>> GetAllArticlesByAuthorPagedAsync(int authorId, int numResultsPerPage, int nextPageNum)
+        {
+            var numArticles = await _dataService.GetArticleByAuthorCountAsync(authorId);
+
+            var result = _pagingService.CalculatePagingMetric(numArticles, numResultsPerPage, nextPageNum);
+
+            var min = result.PageFrom;
+            var max = numResultsPerPage;
+
+            var articles = await Task.Run(() => _dataService.GetArticlesByAuthorId(authorId, min, max));
 
             return articles.ToArticleModelList(result.PageCount);
         }
@@ -57,9 +76,33 @@
             return articles.ToArticleModelList(result.PageCount);
         }
 
+        public async Task<IEnumerable<Models.ArticleModel>> GetAllArticlesPagedAsync(int numResultsPerPage, int nextPageNum)
+        {
+            var numArticles = await _dataService.GetArticleCountAsync();
+
+            var result = _pagingService.CalculatePagingMetric(numArticles, numResultsPerPage, nextPageNum);
+
+            var min = result.PageFrom;
+            var max = numResultsPerPage;
+
+            var articles = await Task.Run(() => _dataService.GetArticles(min, max));
+
+            return articles.ToArticleModelList(result.PageCount);
+        }
+
         public Models.ArticleModel GetArticleById(int articleId)
         {
             var entity = _dataService.GetArticleById(articleId);
+
+            if (entity == null)
+                return null;
+
+            return entity.ToArticleModel();
+        }
+
+        public async Task<Models.ArticleModel> GetArticleByIdAsync(int articleId)
+        {
+            var entity = await _dataService.GetArticleByIdAsync(articleId);
 
             if (entity == null)
                 return null;
@@ -72,6 +115,18 @@
             var entityArticle = article.ToArticleEntity();
 
             var savedArticle = _dataService.AddArticle(entityArticle);
+
+            if (savedArticle == null)
+                return null;
+
+            return savedArticle.ToArticleModel();
+        }
+
+        public async Task<Models.ArticleModel> PublishArticleAsync(Models.ArticleModel article)
+        {
+            var entityArticle = article.ToArticleEntity();
+
+            var savedArticle = await _dataService.AddArticleAsync(entityArticle);
 
             if (savedArticle == null)
                 return null;
@@ -113,11 +168,52 @@
 
         }
 
+        public async Task<bool> UpdatePublishedArticleAsync(Models.ArticleModel article)
+        {
+            var existingArticle = await GetArticleByIdAsync(article.ArticleId);
+
+            if (existingArticle == null)
+                return false;
+
+            var updatedArticle = new DataAccess.Article
+            {
+                ArticleId = article.ArticleId,
+                Title = article.Title,
+                Body = article.Body,
+                PublishDate = DateTime.Now
+            };
+
+            if (await _dataService.UpdateArticleAsync(updatedArticle) <= 0)
+                return false;
+
+            if (article.Comments != null && article.Comments.Count() > 0 && !string.IsNullOrWhiteSpace(article.Comments.FirstOrDefault().commentText))
+            {
+                var updatedComment = await _dataService.AddCommentAsync(new DataAccess.Comment()
+                {
+                    PersonId = article.AuthorId,
+                    ArticleId = article.ArticleId,
+                    CommentText = article.Comments.FirstOrDefault().commentText
+                });
+
+                return (updatedComment != null);
+            }
+
+            return true;
+        }
+
+
         public bool DeletePublishedArticle(int articleId)
         {
             return Convert.ToBoolean(_dataService.DeleteArticle(articleId));
             // ( To test deletions without deleting )
             // return Convert.ToBoolean((_service.GetArticle(articleId)!=null));
+        }
+
+        public async Task<bool> DeletePublishedArticleAsync(int articleId)
+        {
+            var deleted = await _dataService.DeleteArticleAsync(articleId);
+
+            return Convert.ToBoolean(deleted);
         }
 
         /*
@@ -157,6 +253,9 @@
             return groupedArticleLikes;
         }
 
-       
+        public async Task<IEnumerable<Models.GroupedArticleLikeModel>> GetGroupedArticleLikesAsync()
+        {
+            return await Task.Run(() => GetGroupedArticleLikes());
+        }
     }
 }

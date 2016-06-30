@@ -28,7 +28,7 @@
             $scope.showWarning = false;
             $scope.attemptLogin = function () {
                 var jsondata = { userName: $scope.input.username.value, password: $scope.input.password.value };
-                $http.post($locationService.virtUrl() + '/api/membership/login', jsondata).success(function (response, status, headers, config) {
+                $http.post($locationService.virtUrl() + '/api/membership/loginasync', jsondata).success(function (response, status, headers, config) {
                     var user = $memberSessionService.storeMembership(response);
                     if (user === null) {
                         $scope.showWarning = true;

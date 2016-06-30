@@ -1,6 +1,7 @@
 ﻿namespace NewsLive.Angular.Api
 {
     using System.Web.Http;
+    using System.Threading.Tasks;
 
     using DataAccess.Models;
     using DataAccess.Repository.Comment;
@@ -19,6 +20,12 @@
         public CommentModel AddComment(CommentModel comment)
         {
             return _repository.AddComment(comment);
+        }
+
+        [HttpPut]
+        public async Task<CommentModel> AddCommentAsync(CommentModel comment)
+        {
+            return await _repository.AddCommentAsync(comment);
         }
     }
 }

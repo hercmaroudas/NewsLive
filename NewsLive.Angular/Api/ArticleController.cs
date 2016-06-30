@@ -2,6 +2,7 @@
 {
     using System.Web.Http;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     using Caching;
     using DataAccess.Models;
@@ -25,11 +26,23 @@
             return _repository.GetAllArticlesPaged(numResultsPerPage, nextPageNum);
         }
 
+        [HttpGet]
+        public async Task<IEnumerable<ArticleModel>> GetAllArticlesPagedAsync(int numResultsPerPage, int nextPageNum)
+        {
+            return await _repository.GetAllArticlesPagedAsync(numResultsPerPage, nextPageNum);
+        }
+
         // GET: api/Article/GetAllArticlesByAuthorPaged/1/2/3
         [HttpGet]
         public IEnumerable<ArticleModel> GetAllArticlesByAuthorPaged(int authorId, int numResultsPerPage, int nextPageNum)
         {
             return _repository.GetAllArticlesByAuthorPaged(authorId, numResultsPerPage, nextPageNum);
+        }
+
+        [HttpGet]
+        public async Task<IEnumerable<ArticleModel>> GetAllArticlesByAuthorPagedAsync(int authorId, int numResultsPerPage, int nextPageNum)
+        {
+            return await _repository.GetAllArticlesByAuthorPagedAsync(authorId, numResultsPerPage, nextPageNum);
         }
 
         // GET: api/Article/GetGroupedArticleLikes
@@ -39,6 +52,12 @@
             return _repository.GetGroupedArticleLikes();
         }
 
+        [HttpGet]
+        public async Task<IEnumerable<GroupedArticleLikeModel>> GetGroupedArticleLikesAsync()
+        {
+            return await _repository.GetGroupedArticleLikesAsync();
+        }
+
         // GET: api/Article/GetArticle/5
         [HttpGet]
         public ArticleModel GetArticle(int articleId)
@@ -46,10 +65,23 @@
             return _repository.GetArticleById(articleId);
         }
 
+        [HttpGet]
+        public async Task<ArticleModel> GetArticleAsync(int articleId)
+        {
+            return await _repository.GetArticleByIdAsync(articleId);
+        }
+
         // GET: api/Article/GetAllArticlesByAuthor/5
+        [HttpGet]
         public IEnumerable<ArticleModel> GetAllArticlesByAuthor(int authorId)
         {
             return _repository.GetAllArticlesByAuthor(authorId);
+        }
+
+        [HttpGet]
+        public async Task<IEnumerable<ArticleModel>> GetAllArticlesByAuthorAsync(int authorId)
+        {
+            return await _repository.GetAllArticlesByAuthorAsync(authorId);
         }
 
         // POST: api/Article/PublishArticle
@@ -59,6 +91,12 @@
             return _repository.PublishArticle(article);
         }
 
+        [HttpPost]
+        public async Task<ArticleModel> PublishArticleAsync(ArticleModel article)
+        {
+            return await _repository.PublishArticleAsync(article);
+        }
+
         // PUT: api/Article/UpdatePublishedArticle
         [HttpPut]
         public bool UpdatePublishedArticle(ArticleModel article)
@@ -66,11 +104,23 @@
             return _repository.UpdatePublishedArticle(article);
         }
 
+        [HttpPut]
+        public async Task<bool> UpdatePublishedArticleAsync(ArticleModel article)
+        {
+            return await _repository.UpdatePublishedArticleAsync(article);
+        }
+
         // DELETE: api/Article/DeletePublishedArticle/5
         [HttpDelete]
         public bool DeletePublishedArticle(int articleId)
         {
             return _repository.DeletePublishedArticle(articleId);
+        }
+
+        [HttpDelete]
+        public async Task<bool> DeletePublishedArticleAsync(int articleId)
+        {
+            return await _repository.DeletePublishedArticleAsync(articleId);
         }
     }
 }
